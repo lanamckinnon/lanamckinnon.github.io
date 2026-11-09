@@ -161,6 +161,8 @@ figure { margin: 0; }
 .fig img { border-radius: 10px; border: 1px solid var(--rule); background: #fff; }
 .fig figcaption { max-width: var(--text-w); font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
 .fig.tall img { max-width: min(100%, 48rem); margin-inline: auto; }
+/* every chart uses the same width as the text column */
+.wide .fig, .wide > details.more { max-width: var(--text-w); margin-inline: auto; }
 .fig.tall figcaption { margin-inline: auto; }
 
 /* stat strip */
@@ -320,10 +322,17 @@ html:not(.js) .hl[data-key~="tail"], html:not(.js) .hl-label[data-key~="tail2"] 
 .js .bc.grow .lab { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .js .bc .bar, .js .bc .lab { transition: none; } }
 @media (max-width: 560px) { .bc-plot { margin-left: 2.2rem; } .bc-x { font-size: 0.72rem; } .lab { font-size: 0.7rem; } .bc-bars { width: 86%; gap: 8%; } }
+/* card rows match the text column too; the hero and the map stay wide */
+.chapter .wide, .exceptions, .family, .audiences, .closer, .methods-grid, .about-card { max-width: var(--text-w); }
+.audiences { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* a slightly wider text column on large monitors */
+@media (min-width: 1200px) { :root { --text-w: 46rem; } }
+@media (min-width: 1600px) { :root { --text-w: 50rem; } }
+@media (max-width: 760px) { .audiences { grid-template-columns: 1fr; } }
 .audiences.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.aud-lead { max-width: var(--wide-w); margin: 2.25rem auto 0; font-family: var(--display); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.15; color: #F0A65A; }
+.aud-lead { max-width: var(--text-w); margin: 2.25rem auto 0; font-family: var(--display); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.15; color: #F0A65A; }
 .aud-lead + .audiences { margin-top: 1rem; }
-.aud-also { max-width: var(--wide-w); margin: 2.25rem auto 0; padding-top: 1.25rem; border-top: 1px solid rgba(233, 238, 244, 0.18); display: grid; gap: 0.9rem; }
+.aud-also { max-width: var(--text-w); margin: 2.25rem auto 0; padding-top: 1.25rem; border-top: 1px solid rgba(233, 238, 244, 0.18); display: grid; gap: 0.9rem; }
 .aud-also-label { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--on-night-muted); }
 .aud-also-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem 2rem; }
 .aud-also-row p { color: var(--on-night); font-size: 1rem; line-height: 1.45; }
@@ -813,7 +822,7 @@ html:not(.js) .hl[data-key~="tail"], html:not(.js) .hl-label[data-key~="tail2"] 
       if (!slot || !box || !head || !cards) return;
       var gap = parseFloat(getComputedStyle(stage).rowGap) || 0;
       var avail = stage.clientHeight - head.offsetHeight - cards.offsetHeight - 2 * gap;
-      var w = Math.min(slot.clientWidth, 960, Math.floor(avail * RATIO));
+      var w = Math.min(slot.clientWidth, document.querySelector('.col').clientWidth || 640, Math.floor(avail * RATIO));
       if (w > 0) box.style.width = w + "px";
     });
   }
