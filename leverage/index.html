@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Who Holds the Leverage?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="A data story on BCBS of Illinois PPO and HMO negotiated prices for the same doctors, and what they reveal about bargaining power.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: long-form scroll. Narrow reading column, wide figures, full-bleed dark "chapter" bands,
+   one sticky map sequence. Single committed light look with dark bands (charts are white images). */
+:root {
+  --paper: #FBFBFC;      /* page */
+  --ink: #18212B;        /* text */
+  --muted: #5B6C7D;      /* captions, secondary */
+  --rule: #DCE2E8;       /* hairlines, card edges */
+  --tint: #EEF2F6;       /* soft panels */
+  --night: #141D27;      /* dark bands */
+  --night-2: #1F2B38;    /* panels on dark */
+  --on-night: #E9EEF4;   /* text on dark */
+  --on-night-muted: #9FB0C2;
+  --ppo: #1F5FA8;        /* PPO and health systems, matches the charts */
+  --ppo-light: #8DB8F2;  /* PPO on dark */
+  --hmo: #D17A22;        /* HMO, matches the charts */
+  --hmo-light: #F0A85E;
+
+  --display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+
+  --text-w: 40rem;
+  --wide-w: 68rem;
+  --sec: clamp(2.5rem, 7vh, 4.5rem);  /* one spacing step: the space above and below every section's content */
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--body); font-size: 1.0625rem; line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--ppo); text-underline-offset: 0.18em; }
+a:focus-visible, summary:focus-visible { outline: 3px solid var(--hmo); outline-offset: 3px; border-radius: 2px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; line-height: 1.1; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.mono { font-family: var(--mono); font-size: 0.85em; letter-spacing: 0.01em; }
+.ppo { color: var(--ppo); } .hmo { color: var(--hmo); }
+
+/* bands and columns */
+.band { padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.band.dark { background: var(--night); color: var(--on-night); }
+.col { max-width: var(--text-w); margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+.wide { max-width: var(--wide-w); margin-inline: auto; }
+.chapter { padding-block: var(--sec); }
+.eyebrow {
+  font-family: var(--mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--muted);
+}
+.dark .eyebrow { color: var(--on-night-muted); }
+.chapter h2 { font-size: clamp(1.9rem, 4.2vw, 2.75rem); }
+.lede { font-size: 1.2rem; }
+
+/* ---------- hero ---------- */
+.back-home { display: inline-block; margin-bottom: 1.5rem; color: var(--ppo-light); font-weight: 600; text-decoration: none; }
+.back-home:hover { text-decoration: underline; }
+.hero { padding-block: clamp(3rem, 8vw, 6rem) clamp(2.5rem, 6vw, 4.5rem); overflow: hidden; }
+.hero-grid {
+  max-width: var(--wide-w); margin-inline: auto;
+  display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 4rem); align-items: center;
+}
+.hero h1 { font-size: clamp(2.8rem, 8vw, 5.6rem); font-weight: 700; letter-spacing: -0.015em; }
+.hero h1 em { font-style: italic; font-weight: 400; color: var(--ppo-light); }
+.hero .dek { font-family: var(--display); font-size: clamp(1.2rem, 2.4vw, 1.55rem); line-height: 1.4; color: var(--on-night); margin-top: 1.25rem; max-width: 32rem; }
+.hero .byline { margin-top: 1.75rem; font-size: 0.95rem; color: var(--on-night-muted); }
+.hero .byline strong { color: var(--on-night); font-weight: 600; }
+.hero-map { position: relative; justify-self: center; max-width: 360px; width: 100%; }
+.hero-map figcaption { font-family: var(--mono); font-size: 0.72rem; color: var(--on-night-muted); margin-top: 0.6rem; text-align: center; }
+.scroll-cue { margin-top: 2.5rem; font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--on-night-muted); text-decoration: none; display: inline-flex; gap: 0.5rem; align-items: center; }
+.scroll-cue span { display: inline-block; animation: nudge 2.4s ease-in-out infinite; }
+@keyframes nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+@media (prefers-reduced-motion: reduce) { .scroll-cue span { animation: none; } }
+
+/* ---------- price tags ---------- */
+.tags { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center; margin-block: 1rem 0.5rem; }
+.tag { border-radius: 14px; padding: 1.25rem 1.4rem; color: #fff; display: grid; gap: 0.15rem; }
+.tag.ppo-bg { background: var(--ppo); } .tag.hmo-bg { background: var(--hmo); }
+.tag .plan { font-weight: 700; font-size: 1rem; letter-spacing: 0.04em; }
+.tag .price { font-family: var(--display); font-weight: 700; font-size: clamp(2.2rem, 6vw, 3.3rem); line-height: 1; font-variant-numeric: tabular-nums; }
+.tag .unit { font-size: 0.85rem; opacity: 0.88; }
+.gap { text-align: center; font-family: var(--display); font-weight: 700; font-size: clamp(1.8rem, 5vw, 2.6rem); color: var(--ppo); line-height: 1; }
+.gap small { display: block; font-family: var(--body); font-weight: 400; font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+.caption { font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+
+/* ---------- two sides ---------- */
+.sides { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem; }
+.side { background: var(--tint); border-radius: 14px; padding: 1.3rem 1.4rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
+.side h3 { font-size: 1.4rem; }
+.side .who { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; }
+.side p { font-size: 0.98rem; }
+
+/* ---------- scrollytelling map: map pinned on top, cards slide left to right below it ---------- */
+.scrolly { position: relative; margin-top: 2.5rem; }
+/* chart sequence: chart sits at the top of the pinned screen, cards right below it */
+.scrolly-chart { margin-top: 0.5rem; }
+/* the section headline sits inside the pinned screen, so the pause starts with the headline in view */
+.scrolly-chart .h-stage { grid-template-rows: auto minmax(0, 1fr) var(--card-zone, 11.5rem); }
+.stage-head { gap: 0.6rem; width: 100%; }
+.stage-head h2 { font-size: clamp(1.9rem, 4.2vw, 2.75rem); }
+.stage-head p:not(.eyebrow) { font-size: 1rem; }
+.chart-slot { container-type: size; min-height: 0; display: grid; justify-items: center; align-items: start; }
+.scrolly-chart .chart-box { align-self: start; width: min(100cqw, 60rem, 173.08cqh); }
+html:not(.js) .chart-slot { container-type: normal; }
+html:not(.js) .scrolly-chart .chart-box { width: min(100%, 60rem); }
+/* phones: the chart is limited by width, so stack headline, chart and cards with no gap */
+@media (max-width: 760px) {
+  .scrolly-chart .h-stage { grid-template-rows: auto auto var(--card-zone, 13.5rem); align-content: start; }
+  .chart-slot { container-type: normal; }
+  .scrolly-chart .chart-box { width: 100%; }
+}
+.scrolly-sticky { position: sticky; top: 0; height: 100vh; height: 100svh; padding-block: clamp(1.5rem, 4vh, 2.5rem); }
+.h-stage { height: 100%; max-width: var(--wide-w); margin-inline: auto; display: grid; grid-template-rows: minmax(0, 1fr) var(--card-zone, 11.5rem); gap: 1rem; }
+.scrolly-frame { position: relative; width: min(100%, 34rem); height: 100%; justify-self: center; }
+.scrolly-frame img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.scrolly-frame img.on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .scrolly-frame img { transition: none; } }
+.h-cards { position: relative; overflow: hidden; }
+.hcard {
+  background: #fff; border: 1px solid var(--rule); border-radius: 14px;
+  padding: 1rem 1.25rem; box-shadow: 0 10px 30px rgba(20, 29, 39, 0.10);
+  display: grid; gap: 0.35rem; align-content: start;
+}
+.js .hcard { position: absolute; top: 0; left: 50%; width: min(100% - 4px, 34rem); margin-left: calc(min(100% - 4px, 34rem) / -2); will-change: transform; transform: translateX(130vw); }
+.h-steps { margin-top: -100vh; margin-top: -100svh; pointer-events: none; }
+.h-steps div { height: 100vh; height: 100svh; }
+.hcard .num { font-family: var(--display); font-weight: 700; font-size: 2.1rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.hcard p { font-size: 0.98rem; }
+/* without the script, cards simply list under the map */
+html:not(.js) .h-steps { display: none; }
+html:not(.js) .scrolly-sticky { position: static; height: auto; }
+html:not(.js) .h-stage { grid-template-rows: auto auto; }
+html:not(.js) .scrolly-frame { height: 70vh; }
+html:not(.js) .scrolly-frame img + img { display: none; }
+html:not(.js) .h-cards { display: grid; gap: 1rem; overflow: visible; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.85rem; }
+.legend i { display: inline-block; width: 0.9rem; height: 0.9rem; border-radius: 3px; vertical-align: -2px; margin-right: 0.35rem; border: 1px solid #b8c0c8; }
+
+/* ---------- figures ---------- */
+figure { margin: 0; }
+.fig { margin-block: 2rem 0.5rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.7rem; }
+.fig img { border-radius: 10px; border: 1px solid var(--rule); background: #fff; }
+.fig figcaption { max-width: var(--text-w); font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+.fig.tall img { max-width: min(100%, 48rem); margin-inline: auto; }
+.fig.tall figcaption { margin-inline: auto; }
+
+/* stat strip */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; margin-top: 1.5rem; }
+.stat { min-width: 0; overflow-wrap: anywhere; background: var(--paper); padding: 1rem 1.1rem; display: grid; gap: 0.25rem; align-content: start; }
+.stat .k { font-size: 0.85rem; color: var(--muted); }
+.stat .v { font-family: var(--display); font-weight: 700; font-size: 1.45rem; line-height: 1.15; }
+
+/* pull figure */
+.pull { margin-block: 2.5rem 1rem; display: grid; grid-template-columns: auto 1fr; gap: 1.25rem; align-items: center; }
+.pull .big { font-family: var(--display); font-weight: 700; font-size: clamp(3rem, 9vw, 5.2rem); line-height: 0.95; font-variant-numeric: tabular-nums; }
+.pull p { font-size: 1.05rem; max-width: 26rem; }
+
+details.more { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding-block: 0.9rem; }
+details.more summary { cursor: pointer; font-weight: 600; color: var(--ppo); }
+details.more[open] summary { margin-bottom: 1rem; }
+
+/* ---------- dark chapters ---------- */
+.dark-chapter { padding-block: 5rem; }
+.dark-chapter h2 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); color: #fff; }
+.exceptions { max-width: var(--wide-w); margin: 2.5rem auto 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.ex { background: var(--night-2); border-radius: 14px; padding: 1.4rem; display: grid; gap: 0.3rem; }
+.ex .name { font-weight: 600; }
+.ex .zero { font-family: var(--display); font-weight: 700; font-size: 3.4rem; line-height: 1; color: #fff; }
+.ex .meta { font-size: 0.9rem; color: var(--on-night-muted); }
+.family { max-width: var(--wide-w); margin: 2.5rem auto 0; display: grid; gap: 1rem; }
+.family h3 { font-size: 1.5rem; color: #fff; }
+.family-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.fam { display: flex; gap: 0.8rem; align-items: baseline; border-top: 1px solid #33455A; padding-top: 0.8rem; }
+.fam b { font-family: var(--display); font-size: 1.9rem; line-height: 1; white-space: nowrap; }
+.fam b.prem { color: var(--ppo-light); } .fam b.none { color: var(--on-night-muted); }
+.dark .note { color: var(--on-night-muted); font-style: italic; }
+
+.audiences { max-width: var(--wide-w); margin: 2.5rem auto 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 1000px) { .audiences { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.aud { background: var(--night-2); border-radius: 14px; padding: 1.4rem; display: grid; gap: 0.5rem; align-content: start; }
+.aud h3 { font-size: 1.45rem; color: var(--hmo-light); }
+.closer { max-width: var(--wide-w); margin: 3rem auto 0; font-family: var(--display); font-style: italic; font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1.3; color: #fff; }
+
+/* ---------- MRI notes ---------- */
+.notes3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.note-card { background: var(--tint); border-radius: 14px; padding: 1.2rem 1.3rem; display: grid; gap: 0.35rem; align-content: start; }
+.note-card b { font-family: var(--display); font-size: 1.45rem; line-height: 1.15; }
+.notes2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.limit-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2rem; }
+.limit-grid .note-card b { font-size: 1.3rem; }
+.limit-grid .note-card p { font-size: 0.95rem; }
+@media (max-width: 900px) { .limit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .limit-grid, .notes2 { grid-template-columns: 1fr; } }
+/* cards that rise into place as they scroll into view */
+.js .rise { transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2,.7,.2,1); }
+.js .rise:not(.shown) { opacity: 0; transform: translateY(48px); }
+@media (prefers-reduced-motion: reduce) { .js .rise { transition: opacity 0.2s linear; } .js .rise:not(.shown) { transform: none; } }
+
+/* ---------- same system, opposite direction ---------- */
+.flip-head { font-size: 1.45rem; margin-top: 2.5rem; }
+.flip-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; }
+.flip { background: var(--tint); border-radius: 14px; padding: 1.1rem 1.25rem; display: grid; gap: 0.55rem; align-content: start; min-width: 0; }
+.flip .name { font-weight: 700; }
+.flip .pair { display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.75rem; align-items: baseline; }
+.flip .pair span { font-size: 0.85rem; color: var(--muted); }
+.flip .pair b { font-family: var(--display); font-size: 1.45rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+@media (max-width: 760px) { .flip-row { grid-template-columns: 1fr; } }
+
+/* ---------- note callout ---------- */
+.callout { background: var(--tint); border-radius: 12px; padding: 1rem 1.2rem; display: grid; gap: 0.35rem; }
+.callout .eyebrow { color: var(--ppo); }
+.callout p { font-size: 0.95rem; }
+
+/* ---------- methods + about ---------- */
+.methods { padding-block: var(--sec); }
+.methods-grid { max-width: var(--wide-w); margin-inline: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+.methods h2 { font-size: 1.9rem; }
+.methods h3 { font-size: 1.2rem; margin-bottom: 0.6rem; font-family: var(--body); font-weight: 700; }
+.methods ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.45rem; font-size: 0.95rem; }
+.about { padding-block: 0 var(--sec); }
+.about-card { max-width: var(--wide-w); margin-inline: auto; border-top: 2px solid var(--ink); padding-top: 1.5rem; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.5rem; align-items: start; }
+.about-card h2 { font-size: 1.6rem; }
+.about-card p { font-size: 0.98rem; color: var(--muted); margin-top: 0.4rem; max-width: 40rem; }
+.about-links { display: grid; gap: 0.4rem; font-weight: 600; }
+footer.band { padding-block: 1.5rem 2.5rem; font-size: 0.82rem; color: var(--muted); border-top: 1px solid var(--rule); }
+footer .wide { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 2rem; }
+
+
+/* ---------- scroll reveals: a pinned stage; cards rise into place as you scroll ---------- */
+.reveal { position: relative; }
+.reveal-sticky { position: sticky; top: 0; min-height: 80vh; min-height: 80svh; display: flex; align-items: center; padding-block: var(--sec); }
+.reveal-sticky > * { width: 100%; }
+.reveal-steps { margin-top: -100vh; margin-top: -100svh; pointer-events: none; }
+.reveal-steps div { height: 55vh; }
+.js .reveal [data-at] { transition: opacity 0.55s ease, transform 0.55s cubic-bezier(.2,.7,.2,1); }
+.js .reveal [data-at]:not(.shown) { opacity: 0; transform: translateY(56px); }
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal [data-at] { transition: opacity 0.2s linear; }
+  .js .reveal [data-at]:not(.shown) { transform: none; }
+}
+.dark-static { padding-block: 2rem var(--sec); }
+.dark-static + .chapter { padding-top: calc(var(--sec) * 1.6); }  /* extra room after a dark band */
+/* a pinned slide already carries space below its content, so the next section starts closer */
+@media (min-width: 761px) { .reveal + .chapter, .reveal + .methods { padding-top: 1rem; } }
+.reveal .pull { margin-block: 0.5rem; }
+.reveal .closer { margin-top: 2rem; }
+
+
+/* chart sequence: highlights drawn over the chart image, positioned in % of the image */
+.chart-box { position: relative; align-self: center; justify-self: center; aspect-ratio: 1800 / 1040;
+  width: min(100%, 60rem, calc((100svh - 3rem - var(--card-zone, 11.5rem)) * 1.7308)); }
+.chart-box img { width: 100%; height: 100%; border-radius: 10px; border: 1px solid var(--rule); background: #fff; }
+.hl { position: absolute; border: 3px solid #C9971F; background: rgba(227, 178, 60, 0.16); border-radius: 6px; opacity: 0; transition: opacity 0.4s ease; pointer-events: none; }
+.hl-label { position: absolute; background: #9A6E0E; color: #fff; font-family: var(--body); font-weight: 700; font-size: 0.85rem; line-height: 1.2; padding: 0.3rem 0.55rem; border-radius: 6px; opacity: 0; transition: opacity 0.4s ease; white-space: nowrap; pointer-events: none; }
+.hl.on, .hl-label.on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .hl, .hl-label { transition: none; } }
+html:not(.js) .hl[data-key~="tail"], html:not(.js) .hl-label[data-key~="tail2"] { opacity: 1; }
+@media (max-width: 760px) { .hl-label { font-size: 0.62rem; padding: 0.15rem 0.35rem; } .hl { border-width: 2px; } .chart-box { align-self: end; } }
+
+/* ---------- small screens ---------- */
+@media (max-width: 760px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr); }
+  .hero-map { max-width: 200px; justify-self: center; }
+  .sides, .exceptions, .audiences, .notes3, .methods-grid, .family-row { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tags { grid-template-columns: 1fr 1fr; }
+  .gap { grid-column: 1 / -1; order: 3; }
+  .pull { grid-template-columns: 1fr; gap: 0.5rem; }
+  .scrolly { --card-zone: 13.5rem; }
+  .hcard { padding: 0.9rem 1rem; }
+  .hcard .num { font-size: 1.8rem; }
+  .hcard p { font-size: 0.92rem; }
+  .about-card { grid-template-columns: 1fr; }
+  .reveal-sticky { padding-block: 1.5rem; }
+  .reveal .aud, .reveal .ex { padding: 1rem 1.1rem; }
+  .reveal .audiences, .reveal .exceptions { margin-top: 1.5rem; gap: 0.75rem; }
+}
+
+/* ---------- bar charts drawn in HTML so the bars can grow on scroll ---------- */
+.bc { --sys: #1F5FA8; --non: #9A9A9A; background: #fff; border: 1px solid var(--rule); border-radius: 10px; padding: 1rem 1.1rem 0.9rem; display: grid; gap: 0.8rem; }
+.bc-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem 1.5rem; flex-wrap: wrap; font-size: 0.85rem; color: var(--muted); }
+.bc-legend { display: flex; gap: 1rem; flex-wrap: wrap; color: var(--ink); }
+.bc-legend i { display: inline-block; width: 0.8rem; height: 0.8rem; border-radius: 2px; margin-right: 0.35rem; vertical-align: -0.08rem; }
+.bc-legend i.sys { background: var(--sys); } .bc-legend i.non { background: var(--non); }
+.bc-plot { position: relative; height: clamp(220px, 38vh, 340px); margin-left: 2.6rem; margin-bottom: 2.6rem; }
+.bc-tick { position: absolute; left: 0; right: 0; bottom: calc(var(--t) / var(--max) * 100%); border-top: 1px solid #EDF0F3; }
+.bc-tick:first-child { border-top-color: #9AA5B1; }
+.bc-tick span { position: absolute; right: calc(100% + 0.45rem); top: -0.6rem; font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bc-groups { position: absolute; inset: 0; display: flex; }
+.bc-group { flex: 1; position: relative; display: flex; justify-content: center; min-width: 0; }
+.bc-bars { display: flex; gap: 6%; width: 74%; height: 100%; align-items: flex-end; }
+.bw { position: relative; flex: 1; height: 100%; }
+.bar { position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--v) / var(--max) * 100%); border-radius: 3px 3px 0 0; transform-origin: bottom; }
+.bar.sys { background: var(--sys); } .bar.non { background: var(--non); }
+.lab { position: absolute; left: -20%; right: -20%; text-align: center; bottom: calc(var(--v) / var(--max) * 100% + 0.25rem); font-size: 0.82rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.bc-few { position: absolute; bottom: 0.35rem; left: -30%; right: -30%; text-align: center; font-size: 0.72rem; color: var(--muted); font-style: italic; }
+.bc-x { position: absolute; top: calc(100% + 0.5rem); left: 0; right: 0; text-align: center; font-size: 0.84rem; line-height: 1.25; }
+.js .bc .bar { transform: scaleY(0); transition: transform 0.9s cubic-bezier(.2,.7,.2,1); transition-delay: var(--d, 0ms); }
+.js .bc .lab { opacity: 0; transition: opacity 0.4s ease; transition-delay: calc(var(--d, 0ms) + 600ms); }
+.js .bc.grow .bar { transform: scaleY(1); }
+.js .bc.grow .lab { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .js .bc .bar, .js .bc .lab { transition: none; } }
+@media (max-width: 560px) { .bc-plot { margin-left: 2.2rem; } .bc-x { font-size: 0.72rem; } .lab { font-size: 0.7rem; } .bc-bars { width: 86%; gap: 8%; } }
+.audiences.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.aud-lead { max-width: var(--wide-w); margin: 2.25rem auto 0; font-family: var(--display); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.15; color: #F0A65A; }
+.aud-lead + .audiences { margin-top: 1rem; }
+.aud-also { max-width: var(--wide-w); margin: 2.25rem auto 0; padding-top: 1.25rem; border-top: 1px solid rgba(233, 238, 244, 0.18); display: grid; gap: 0.9rem; }
+.aud-also-label { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--on-night-muted); }
+.aud-also-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem 2rem; }
+.aud-also-row p { color: var(--on-night); font-size: 1rem; line-height: 1.45; }
+.aud-also-row b { display: block; font-family: var(--display); font-size: 1.2rem; color: #fff; margin-bottom: 0.2rem; }
+@media (max-width: 760px) { .audiences.three, .aud-also-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+
+<header class="band dark hero">
+  <div class="hero-grid">
+    <div>
+      <a class="back-home" href="../">← Back to portfolio</a>
+      <p class="eyebrow">A data story · BCBS of Illinois price transparency files</p>
+      <h1>Who Holds the <em>Leverage?</em></h1>
+      <p class="dek">The same doctor can be paid very different prices depending on whether the patient has a PPO or an HMO card. Here is what those prices reveal about bargaining power.</p>
+      <p class="byline">By <strong>Lana McKinnon</strong> · BDI513 Data Storytelling, University of Illinois Urbana-Champaign · November 2026</p>
+      <a class="scroll-cue" href="#start">Scroll to begin <span aria-hidden="true">↓</span></a>
+    </div>
+    <figure class="hero-map">
+      <img src="images/hero_map.png" width="696" height="1190" alt="Map of Illinois with one dot per provider priced in both the PPO and an HMO, dense around Chicago">
+      <figcaption>26,287 providers priced in both plans</figcaption>
+    </figure>
+  </div>
+</header>
+
+<main>
+  <section class="band reveal" id="start" aria-label="Two prices for one office visit">
+    <div class="reveal-sticky">
+      <div class="col">
+        <p class="eyebrow">Same doctor, same visit</p>
+        <h2 style="font-size:clamp(1.9rem, 4.2vw, 2.75rem)">Two prices for one office visit</h2>
+        <p class="lede">A routine office visit, <span class="mono">CPT 99213</span>, with the same Endeavor Health doctors, priced under two BCBS of Illinois plans.</p>
+        <div class="tags" role="group" aria-label="PPO price $150.32 versus HMO price $103.09, 46 percent more under the PPO">
+          <div class="tag ppo-bg" data-at="1"><span class="plan">PPO</span><span class="price">$150.32</span><span class="unit">per office visit</span></div>
+          <div class="gap" data-at="3">+46%<small>more under the PPO</small></div>
+          <div class="tag hmo-bg" data-at="2"><span class="plan">HMO</span><span class="price">$103.09</span><span class="unit">per office visit</span></div>
+        </div>
+        <p data-at="3">The patient's copay is usually the same in both plans, so they never see the difference. Whoever pays the claim does: the insurer, or, for most workers with employer coverage, the employer. So why would an insurer agree to pay one doctor more just because the patient carries a PPO card?</p>
+      </div>
+    </div>
+    <div class="reveal-steps" aria-hidden="true"><div data-step="0"></div><div data-step="1"></div><div data-step="2"></div><div data-step="3"></div><div data-step="3"></div></div>
+  </section>
+
+  <section class="band reveal" aria-label="Every price is a negotiation">
+    <div class="reveal-sticky">
+      <div class="col">
+        <p class="eyebrow">How prices are set</p>
+        <h2 style="font-size:clamp(1.9rem, 4.2vw, 2.75rem)">Every price is a negotiation</h2>
+        <p>Each negotiated price is the outcome of a bargain between an insurer and a provider, and each side brings its own leverage.</p>
+        <div class="sides">
+          <div class="side" data-at="1">
+            <span class="who hmo">The insurer</span>
+            <h3>Brings volume</h3>
+            <p>"Join our network and we'll send you our members, at a lower price." This works best in an HMO, where members must stay in network.</p>
+          </div>
+          <div class="side" data-at="2">
+            <span class="who ppo">The provider</span>
+            <h3>Brings must-have status</h3>
+            <p>A PPO sells broad access, so it can't easily leave out well-known health systems. This works best for large systems with loyal patients.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal-steps" aria-hidden="true"><div data-step="0"></div><div data-step="1"></div><div data-step="2"></div><div data-step="2"></div></div>
+  </section>
+  <section class="band chapter">
+    <div class="col">
+      <p class="eyebrow">The data</p>
+      <h2>Comparing the same provider in both plans</h2>
+      <p>Since 2022, federal Transparency in Coverage rules have required insurers to publish these negotiated prices. I matched every provider who is priced in both BCBS of Illinois's Blue Choice Preferred PPO and its HMOs (HMO Illinois and Blue Precision HMO), so the same provider can be compared in both plans.</p>
+      <p>When the PPO's rate for the same doctor and service is more than 5% above the HMO's, I count it as a <strong>higher PPO rate</strong>: the PPO pays more. Within 5% counts as the same price.</p>
+    </div>
+  </section>
+
+  <section class="scrolly" aria-label="Map sequence: where the matched providers practice">
+    <div class="scrolly-sticky band">
+      <div class="h-stage">
+        <div class="scrolly-frame">
+          <img class="on" data-key="state" src="images/map_state.png" width="749" height="1274" alt="Illinois counties shaded by region (Chicago, suburban Chicago, downstate) with one dot per matched provider">
+          <img data-key="chicago" src="images/map_chicago.png" width="768" height="1162" alt="Close-up of the Chicago area: Cook, DuPage, Kane, Lake and Will counties, dense with matched providers, with a legend for Chicago (Cook County), suburban Chicago and downstate Illinois">
+        </div>
+        <div class="h-cards">
+          <div class="hcard" data-show="state">
+            <p class="eyebrow">Where they practice</p>
+            <span class="num">26,287</span>
+            <p>providers are priced in both the PPO and an HMO. Each dot is one provider at their practice ZIP code.</p>
+          </div>
+          <div class="hcard" data-show="state">
+            <span class="num">4,606</span>
+            <p>are downstate, spread across Peoria, Springfield, Champaign, Rockford and smaller towns.</p>
+          </div>
+          <div class="hcard" data-show="chicago">
+            <span class="num">14,567</span>
+            <p>practice in Chicago and the rest of Cook County, and <strong>7,114</strong> in the suburban counties of DuPage, Kane, Lake and Will. Leverage looks different in each region.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="h-steps" aria-hidden="true"><div></div><div></div><div></div></div>
+  </section>
+
+  <section class="band chapter">
+    <div class="col">
+      <p class="eyebrow">The big picture</p>
+      <h2>Which plan pays more depends on the service</h2>
+      <p>Across five common services, neither plan is simply cheaper. For the same providers, the PPO pays more for office visits, the two plans pay about the same for a lab panel, and close to it for therapy, and the HMO pays more for brain MRIs.</p>
+    </div>
+    <div class="wide">
+      <figure class="fig">
+        <img src="images/service_gap.png" width="1979" height="2136" loading="lazy" alt="Chart of how much more one plan pays than the other for five services in three regions: the PPO pays 5 to 12 percent more for office visits, the lab panel and psychotherapy are within about 5 percent, and the HMO pays 13 to 42 percent more for brain MRIs">
+        <figcaption>How much more one plan pays than the other for the same providers, by region. Blue: the PPO pays more. Orange: the HMO pays more. The shaded band marks a difference within 5%. Average prices, office settings, providers who normally bill each service.</figcaption>
+      </figure>
+      <div class="stats">
+        <div class="stat"><span class="k">Office visits <span class="mono">99213, 99214</span></span><span class="v ppo">PPO +5% to +12%</span></div>
+        <div class="stat"><span class="k">Lab panel <span class="mono">80053</span></span><span class="v" style="color:var(--muted)">About the same</span></div>
+        <div class="stat"><span class="k">Psychotherapy <span class="mono">90837</span></span><span class="v hmo">HMO +3% to +6%</span></div>
+        <div class="stat"><span class="k">Brain MRI <span class="mono">70551</span></span><span class="v hmo">HMO +13% to +42%</span></div>
+      </div>
+    </div>
+    <div class="col" style="margin-top:1.5rem">
+      <p>So the better question isn't "which plan is cheaper?" It's who has leverage over which prices.</p>
+    </div>
+  </section>
+
+  <section class="band" style="padding-block: var(--sec) 0.5rem">
+    <div class="col">
+      <div class="callout">
+        <p class="eyebrow">One service, like for like</p>
+        <p>The leverage charts that follow use one routine office visit, <span class="mono">CPT 99213</span>. Nearly every doctor bills it, so it gives the largest same-doctor comparison: 17,451 doctors priced in both plans.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="scrolly scrolly-chart" aria-label="The HMO pays a standard rate: HMO and PPO prices for the same doctors">
+    <div class="scrolly-sticky band">
+      <div class="h-stage">
+        <div class="col stage-head">
+          <p class="eyebrow">The insurer's leverage</p>
+          <h2>The HMO pays a standard rate</h2>
+          <p>Every price paid to the same doctors for one office visit, <span class="mono">CPT 99213</span>. In the HMO, prices cluster on a handful of standard amounts, like a rate card. In the PPO, they spread out.</p>
+        </div>
+        <div class="chart-slot">
+        <div class="chart-box">
+          <img src="images/price_spread.png" width="1800" height="1040" alt="Two histograms of the same doctors' office visit prices: HMO prices cluster at a few values, mostly $103.09; PPO prices spread out with a long tail above $110">
+          <div class="hl" data-key="hmo" style="left:31.8%; top:8.1%; width:2.7%; height:36.5%"></div>
+          <div class="hl" data-key="tail tail2" style="left:37.3%; top:66.4%; width:57.5%; height:22.6%"></div>
+        </div>
+        </div>
+        <div class="h-cards">
+          <div class="hcard" data-show="hmo">
+            <p class="eyebrow">What the chart shows</p>
+            <span class="num hmo">55%</span>
+            <p>of these doctors get exactly the same HMO price, <strong>$103.09</strong>.</p>
+          </div>
+          <div class="hcard" data-show="tail">
+            <span class="num ppo">1 in 4</span>
+            <p>are paid more than $110 in the PPO. In the HMO, none are.</p>
+          </div>
+          <div class="hcard" data-show="tail2">
+            <span class="num">The long tail</span>
+            <p>The typical price is similar in both plans; the higher PPO rates live in the long tail. So who is in the tail?</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="h-steps" aria-hidden="true"><div></div><div></div><div></div></div>
+  </section>
+
+  <section class="band chapter">
+    <div class="col">
+      <p class="eyebrow">The provider's leverage</p>
+      <h2>Higher PPO rates concentrate in the largest health systems</h2>
+      <p>If leverage drives higher PPO rates, they should become more common as groups get bigger. They do, but only for health systems. Large groups that aren't part of a system, such as therapy platforms and anesthesia groups, almost never get them.</p>
+    </div>
+    <div class="wide">
+      <figure class="fig">
+        <div class="bc" role="img" aria-label="Bar chart: share of doctors with a higher PPO rate by group size. Non-system: 12%, 12%, 14%, 5%, 4%. Health system: too few in the smallest groups, then 35%, 29%, 48% and 62% for groups over 1,000 doctors." style="--max:80">
+          <div class="bc-top"><span class="bc-y">Share of doctors with a higher PPO rate (&gt;5%)</span><span class="bc-legend"><span><i class="non"></i>Non-system</span><span><i class="sys"></i>Health system</span></span></div>
+          <div class="bc-plot">
+            <div class="bc-tick" style="--t:0"><span>0%</span></div>
+            <div class="bc-tick" style="--t:20"><span>20%</span></div>
+            <div class="bc-tick" style="--t:40"><span>40%</span></div>
+            <div class="bc-tick" style="--t:60"><span>60%</span></div>
+            <div class="bc-tick" style="--t:80"><span>80%</span></div>
+            <div class="bc-groups">
+              <div class="bc-group"><div class="bc-bars"><div class="bw" style="--v:11.83;--d:0ms"><div class="bar non"></div><span class="lab">12%</span></div><div class="bw"><span class="bc-few">too few</span></div></div><div class="bc-x">1 to 10</div></div>
+              <div class="bc-group"><div class="bc-bars"><div class="bw" style="--v:12.41;--d:90ms"><div class="bar non"></div><span class="lab">12%</span></div><div class="bw" style="--v:34.7;--d:180ms"><div class="bar sys"></div><span class="lab">35%</span></div></div><div class="bc-x">11 to 100</div></div>
+              <div class="bc-group"><div class="bc-bars"><div class="bw" style="--v:13.79;--d:270ms"><div class="bar non"></div><span class="lab">14%</span></div><div class="bw" style="--v:28.67;--d:360ms"><div class="bar sys"></div><span class="lab">29%</span></div></div><div class="bc-x">101 to 500</div></div>
+              <div class="bc-group"><div class="bc-bars"><div class="bw" style="--v:5.39;--d:450ms"><div class="bar non"></div><span class="lab">5%</span></div><div class="bw" style="--v:47.58;--d:540ms"><div class="bar sys"></div><span class="lab">48%</span></div></div><div class="bc-x">501 to 1,000</div></div>
+              <div class="bc-group"><div class="bc-bars"><div class="bw" style="--v:3.78;--d:630ms"><div class="bar non"></div><span class="lab">4%</span></div><div class="bw" style="--v:62.28;--d:720ms"><div class="bar sys"></div><span class="lab">62%</span></div></div><div class="bc-x">Over 1,000</div></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>Share of doctors paid more than 5% above the HMO price, by the number of doctors under the PPO tax ID. "Too few": fewer than 50 doctors. <span class="mono">CPT 99213</span>, plausible billers only.</figcaption>
+      </figure>
+    </div>
+    <div class="col">
+      <div class="pull"><span class="big ppo">62%</span><p>of doctors in health systems with more than 1,000 doctors get a higher PPO rate, compared with <strong>4%</strong> in non-system groups of the same size.</p></div>
+      <details class="more">
+        <summary>Look closer: each billing group's PPO vs HMO rate for an office visit (<span class="mono">CPT 99213</span>)</summary>
+        <figure class="fig" style="margin-top:0">
+          <img src="images/size_scatter.png" width="2178" height="1318" loading="lazy" alt="Scatter plot of group size against the median difference between PPO and HMO rates, with dot size showing all doctors in each group. Most groups sit at 0%; the large exceptions above it are health systems">
+          <figcaption>Each dot is one billing group (tax ID) with at least 5 matched doctors; dot size shows all doctors in the group. Higher PPO rates show up mainly in a few very large health systems, so size alone predicts them only weakly.</figcaption>
+        </figure>
+      </details>
+    </div>
+  </section>
+
+  <section class="band chapter">
+    <div class="col">
+      <p class="eyebrow">Contract by contract</p>
+      <h2>Some systems get a higher PPO rate. Others, just as large, don't</h2>
+      <p>Prices are set one contract at a time. Among the nine largest health systems, Endeavor's medical group gets 46% more in the PPO, Northwestern's 26% and Carle's 24%. Just as large, OSF, the University of Illinois, Cook County Health and Loyola take about the same price in both plans.</p>
+    </div>
+    <div class="wide">
+      <figure class="fig">
+        <img src="images/contracts_ranked.png" width="1797" height="963" loading="lazy" alt="Ranked lollipop chart of the nine health systems with 1,000 or more doctors by how much more the PPO pays (median): Endeavor plus 46 percent, Northwestern plus 26, Carle plus 24, Central DuPage plus 10, Rush plus 4, and OSF, University of Illinois, Cook County Health and Loyola at 0 percent">
+        <figcaption>Health systems with 1,000 or more doctors. Median PPO price compared with the HMO price for the same doctors, <span class="mono">CPT 99213</span>.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="band dark reveal" aria-label="Twist: size isn't everything">
+    <div class="reveal-sticky">
+      <div>
+        <div class="col">
+          <p class="eyebrow">Twist</p>
+          <h2 style="font-size:clamp(2.2rem, 5.5vw, 3.6rem); color:#fff">Size isn't everything</h2>
+          <p>Three of the state's largest systems are paid the standard rate in both plans.</p>
+        </div>
+        <div class="exceptions">
+          <div class="ex" data-at="1"><span class="name">OSF Medical Group</span><span class="zero">0%</span><span class="meta">median difference, PPO vs HMO<br>3,689 doctors in the group · 1,509 compared</span></div>
+          <div class="ex" data-at="2"><span class="name">University of Illinois</span><span class="zero">0%</span><span class="meta">median difference, PPO vs HMO<br>2,146 doctors in the group · 1,236 compared</span></div>
+          <div class="ex" data-at="3"><span class="name">Loyola University Medical Center</span><span class="zero">0%</span><span class="meta">median difference, PPO vs HMO<br>1,237 doctors in the group · 708 compared</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal-steps" aria-hidden="true"><div data-step="0"></div><div data-step="1"></div><div data-step="2"></div><div data-step="3"></div><div data-step="3"></div></div>
+  </section>
+  <section class="band dark dark-static">
+    <div class="family" style="margin-top:0">
+      <h3>Even inside one health system family, contracts differ</h3>
+      <div class="family-row">
+        <div class="fam"><b class="prem">+46%</b><span>Endeavor Health Medical Group</span></div>
+        <div class="fam"><b class="none">about 0%</b><span>Edward Health Ventures</span></div>
+        <div class="fam"><b class="none">about 0%</b><span>Elmhurst Memorial Healthcare</span></div>
+      </div>
+      <p class="note">All three belong to Endeavor Health, formed when NorthShore and Edward-Elmhurst merged in 2022 (renamed Endeavor in 2023). Each bills under its own tax ID, so each has its own contract. Leverage depends on more than size: contract strategy, HMO participation and local competition, none of which these files measure.</p>
+    </div>
+  </section>
+
+  <section class="band chapter">
+    <div class="col">
+      <p class="eyebrow">Where leverage concentrates</p>
+      <h2>Higher PPO rates are most common in the Chicago suburbs</h2>
+      <p>In the suburban counties, 88% of doctors in large systems get a higher PPO rate. In Chicago it's 60%, and downstate 37%, much closer to everyone else. Non-system doctors stay low in every region. Downstate also has the smallest office-visit gap between the plans, about 6%.</p>
+    </div>
+    <div class="wide">
+      <figure class="fig">
+        <div class="bc" role="img" aria-label="Bar chart: share of doctors with a higher PPO rate by region. Suburban Chicago: non-system 7%, large health systems 88%. Chicago (Cook County): 13% and 60%. Downstate Illinois: 16% and 37%." style="--max:100">
+          <div class="bc-top"><span class="bc-y">Share of doctors with a higher PPO rate (&gt;5%)</span><span class="bc-legend"><span><i class="non"></i>Non-system</span><span><i class="sys"></i>Large health system (1,000+ doctors)</span></span></div>
+          <div class="bc-plot">
+            <div class="bc-tick" style="--t:0"><span>0%</span></div>
+            <div class="bc-tick" style="--t:20"><span>20%</span></div>
+            <div class="bc-tick" style="--t:40"><span>40%</span></div>
+            <div class="bc-tick" style="--t:60"><span>60%</span></div>
+            <div class="bc-tick" style="--t:80"><span>80%</span></div>
+            <div class="bc-tick" style="--t:100"><span>100%</span></div>
+            <div class="bc-groups">
+              <div class="bc-group"><div class="bc-bars"><div class="bw" style="--v:7.19;--d:0ms"><div class="bar non"></div><span class="lab">7%</span></div><div class="bw" style="--v:88.45;--d:90ms"><div class="bar sys"></div><span class="lab">88%</span></div></div><div class="bc-x">Suburban Chicago</div></div>
+              <div class="bc-group"><div class="bc-bars"><div class="bw" style="--v:12.72;--d:180ms"><div class="bar non"></div><span class="lab">13%</span></div><div class="bw" style="--v:60.35;--d:270ms"><div class="bar sys"></div><span class="lab">60%</span></div></div><div class="bc-x">Chicago (Cook County)</div></div>
+              <div class="bc-group"><div class="bc-bars"><div class="bw" style="--v:16.45;--d:360ms"><div class="bar non"></div><span class="lab">16%</span></div><div class="bw" style="--v:37.06;--d:450ms"><div class="bar sys"></div><span class="lab">37%</span></div></div><div class="bc-x">Downstate Illinois</div></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>Share of doctors paid more than 5% above the HMO price, <span class="mono">CPT 99213</span>. Large systems have more than 1,000 doctors under one PPO tax ID.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="band chapter">
+    <div class="col">
+      <p class="eyebrow">Second twist</p>
+      <h2>For brain MRIs, it flips</h2>
+      <p>For a brain MRI without contrast, <span class="mono">CPT 70551</span>, the HMO pays the same providers more than the PPO does: 42% more in Chicago, 34% in the suburbs and 13% downstate.</p>
+      <p>But the HMO isn't paying up. It keeps its standard rate: $499.52 for three out of four MRI contracts, just like its office-visit rate card. The gap comes from the PPO paying large contracts much less, as low as $251.</p>
+    </div>
+    <div class="wide">
+      <figure class="fig">
+        <img src="images/mri_gap.png" width="1981" height="650" loading="lazy" alt="Brain MRI: the HMO pays 42 percent more in Chicago, 34 percent more in the suburbs and 13 percent more downstate">
+        <figcaption>How much more the HMO pays than the PPO for a brain MRI, same providers, by region.</figcaption>
+      </figure>
+      <details class="more" style="margin-top:2rem">
+      <summary>Look closer: same systems, opposite direction for an office visit vs a brain MRI</summary>
+      <figure class="fig" style="margin-top:0">
+        <img src="images/same_systems.png" width="1998" height="1222" loading="lazy" alt="For Northwestern and Endeavor, the PPO pays more for an office visit (26 and 46 percent) but the HMO pays more for a brain MRI (91 and 65 percent). Loyola and the University of Illinois get the same office visit price in both plans, but the HMO pays 99 percent more for the MRI.">
+        <figcaption>Office visit vs brain MRI for the same systems. Blue: the PPO pays more. Orange: the HMO pays more. Based on the median PPO and HMO prices in each system's contract.</figcaption>
+      </figure>
+      </details>
+      <div class="notes3 notes2">
+        <div class="note-card"><b class="hmo">+13% to +42%</b><p>higher in the HMO, depending on region, because the PPO pays large contracts less.</p></div>
+        <div class="note-card"><b>One possible reason</b><p>Contracts are negotiated as a package. A system may get more for office visits and give more on imaging, where imaging centers compete with each other. The files don't show the negotiations, so this is a hypothesis.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band chapter limits" id="limits" aria-label="What this data can't show">
+    <div class="col">
+      <p class="eyebrow">Limits</p>
+      <h2>What this data can't show</h2>
+      <p>The files show negotiated prices for each doctor and service. They don't show everything that goes into a bargain, or what anyone actually spends.</p>
+    </div>
+    <div class="wide limit-grid">
+      <div class="note-card rise"><b>Facility fees</b><p>These are doctors' prices in an office setting. When a visit happens in a hospital-owned clinic, the hospital can add its own facility fee. Those aren't compared here, because the HMOs price hospitals as a percent of billed charges, not in dollars.</p></div>
+      <div class="note-card rise"><b>The whole negotiation</b><p>A contract covers many services at once, and can include terms the files leave out, such as contract length, quality bonuses or which plans a system joins. A higher rate on one service may be traded for a lower one elsewhere.</p></div>
+      <div class="note-card rise"><b>Timing and mergers</b><p>Contracts are signed at different times. A group that joined a larger system, like Edward and Elmhurst within Endeavor, may still be on an older contract.</p></div>
+      <div class="note-card rise"><b>Prices, not spending</b><p>The files don't show how often visits or scans happen, so they can't say what any price gap costs in total.</p></div>
+      <div class="note-card rise"><b>Part of a service</b><p>Some hospital-based radiology groups may bill only the radiologist's reading, not the whole scan, which would make their MRI prices look low.</p></div>
+      <div class="note-card rise"><b>One insurer, one moment</b><p>This is BCBS of Illinois in September 2026. Other insurers and later files may differ. HMO groups paid a fixed amount per member have no dollar prices and are left out.</p></div>
+    </div>
+    <div class="col" style="margin-top:1.5rem">
+      <p><strong>Leverage itself isn't measured.</strong> These patterns are consistent with bargaining power, not proof of it.</p>
+    </div>
+  </section>
+
+  <section class="band dark reveal" aria-label="Price transparency shows who holds the leverage">
+    <div class="reveal-sticky">
+      <div>
+        <div class="col">
+          <p class="eyebrow">What it means</p>
+          <h2 style="font-size:clamp(2.2rem, 5.5vw, 3.6rem); color:#fff">Price transparency shows who holds the leverage</h2>
+        </div>
+        <h3 class="aud-lead">What an insurer can do with this</h3>
+        <div class="audiences three">
+          <div class="aud" data-at="1"><h3>Benchmark</h3><p>Flag PPO contracts paid well above the HMO's standard rate, starting with the systems paid 26% to 46% more for an office visit.</p></div>
+          <div class="aud" data-at="2"><h3>Negotiate the bundle</h3><p>The PPO already pays large systems less for an MRI. Negotiate services together, not one line at a time.</p></div>
+          <div class="aud" data-at="3"><h3>Learn from the exceptions</h3><p>OSF, the University of Illinois and Loyola take the standard rate. Size alone doesn't guarantee a higher rate.</p></div>
+        </div>
+        <div class="aud-also" data-at="4">
+          <p class="aud-also-label">The same files are useful beyond insurers</p>
+          <div class="aud-also-row">
+            <p><b>Employers</b>compare plans for the services their employees use.</p>
+            <p><b>Health systems</b>compare their rates with peer systems.</p>
+            <p><b>Patients</b>check the negotiated price before a visit.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal-steps" aria-hidden="true"><div data-step="0"></div><div data-step="1"></div><div data-step="2"></div><div data-step="3"></div><div data-step="4"></div><div data-step="4"></div></div>
+  </section>
+
+  <section class="band methods" id="methods">
+    <div class="methods-grid">
+      <div>
+        <h2>Methods</h2>
+        <ul style="margin-top:1rem">
+          <li><strong>Prices:</strong> BCBS of Illinois Transparency in Coverage in-network rate files (September 2026) for Blue Choice Preferred PPO, HMO Illinois and Blue Precision HMO.</li>
+          <li><strong>Matching:</strong> the same provider (NPI) with a dollar price for the same service and setting in both the PPO and an HMO. Professional (doctor) prices only.</li>
+          <li><strong>Higher PPO rate (the PPO pays more):</strong> the PPO's negotiated rate is more than 5% above the HMO's for the same doctor and service. This is a price per visit, not the monthly premium members pay.</li>
+          <li><strong>Group size:</strong> doctors listed under the PPO tax ID. Health systems identified by organization names plus hand review.</li>
+          <li><strong>System families:</strong> the price files list each tax ID separately and don't say which ones share a parent. The Endeavor Health grouping (NorthShore, Edward, Elmhurst) comes from public merger news, not the data: <a href="https://www.endeavorhealth.org/press-releases/northshore-edward-elmhurst-health-now-endeavor-health" target="_blank" rel="noopener">Endeavor Health press release</a>.</li>
+          <li><strong>Plausible billers:</strong> provider types who would normally bill the service (NUCC taxonomy), to screen out contracted prices that are rarely used.</li>
+          <li><strong>Location:</strong> practice ZIP from the NPPES registry, mapped to counties (Census ZCTA file) and to CMS Medicare payment localities.</li>
+          <li><strong>Tools:</strong> Python (pandas, NumPy, matplotlib) in Jupyter.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Checks and credits</h2>
+        <ul style="margin-top:1rem">
+          <li><a href="checks.html"><strong>How I checked the findings</strong></a></li>
+          <li><a href="ai.html"><strong>How I used AI</strong></a></li>
+          <li><strong>Independent analysis:</strong> prices come from BCBS of Illinois's public price transparency files (September 2026). This is an independent student analysis, not affiliated with or endorsed by BCBS of Illinois or any health system named.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="band about">
+    <div class="about-card">
+      <div>
+        <p class="eyebrow">About the author</p>
+        <h2>Lana McKinnon</h2>
+        <p>M.S. in Business Analytics and AI student at the University of Illinois Urbana-Champaign, with a background in biomedical visualization and fine arts. I turn messy public data into clear stories for business decisions.</p>
+      </div>
+      <div class="about-links">
+        <a href="https://www.linkedin.com/in/lana-mckinnon" target="_blank" rel="noopener">LinkedIn ↗</a>
+        <a href="../">← Back to portfolio</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="band">
+  <div class="wide">
+    <span>Data: BCBS of Illinois price transparency files (Sept. 2026); NPPES; U.S. Census; CMS.</span>
+    <span>© 2026 Lana McKinnon</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  if (!window.requestAnimationFrame) return;
+  document.documentElement.classList.add("js");
+  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Each card's spacer sets its progress p (0 = spacer below the screen, 1 = above it).
+  // 0.15-0.35 slide in from the right, 0.35-0.65 rest in place, 0.65-0.85 slide out to the left.
+  function place(card, p) {
+    var x, o = 1;
+    if (p < 0.15) x = 130;
+    else if (p < 0.35) x = 130 * (1 - (p - 0.15) / 0.2);
+    else if (p <= 0.65) x = 0;
+    else if (p < 0.85) x = -130 * (p - 0.65) / 0.2;
+    else x = -130;
+    if (still) { o = Math.abs(x) < 65 ? 1 : 0; x = 0; }
+    card.style.transform = "translateX(" + x + "vw)";
+    card.style.opacity = o;
+    card.setAttribute("aria-hidden", x === 0 && o === 1 ? "false" : "true");
+  }
+  var sections = [].slice.call(document.querySelectorAll(".scrolly")).map(function (sec) {
+    return { cards: sec.querySelectorAll(".hcard"), spacers: sec.querySelectorAll(".h-steps div"),
+             keyed: sec.querySelectorAll("[data-key]") };
+  });
+  var ticking = false;
+  function update() {
+    ticking = false;
+    var vh = window.innerHeight;
+    sections.forEach(function (S) {
+      var best = null, bestD = 9;
+      S.spacers.forEach(function (sp, i) {
+        var r = sp.getBoundingClientRect();
+        var p = (vh - r.top) / (vh + r.height);
+        place(S.cards[i], p);
+        var d = Math.abs(p - 0.5);
+        if (d < bestD) { bestD = d; best = S.cards[i].dataset.show; }
+      });
+      // anything whose data-key list includes the current card's key is switched on
+      S.keyed.forEach(function (el) { el.classList.toggle("on", el.dataset.key.split(" ").indexOf(best) > -1); });
+    });
+  }
+  function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+  update();
+})();
+(function () {
+  if (!("IntersectionObserver" in window)) return;
+  document.documentElement.classList.add("js");
+  document.querySelectorAll(".reveal").forEach(function (sec) {
+    var items = sec.querySelectorAll("[data-at]");
+    function set(n) {
+      items.forEach(function (el) { el.classList.toggle("shown", Number(el.dataset.at) <= n); });
+    }
+    set(0);
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) set(Number(e.target.dataset.step)); });
+    }, { rootMargin: "-50% 0px -50% 0px" });
+    sec.querySelectorAll(".reveal-steps div").forEach(function (d) { io.observe(d); });
+  });
+})();
+(function () {
+  // each .rise card fades up when it enters the lower part of the screen; cards entering together are staggered
+  var cards = document.querySelectorAll(".rise");
+  if (!cards.length || !("IntersectionObserver" in window)) return;
+  document.documentElement.classList.add("js");
+  var io = new IntersectionObserver(function (entries) {
+    var batch = entries.filter(function (e) { return e.isIntersecting; });
+    batch.forEach(function (e, i) {
+      e.target.style.transitionDelay = (i * 0.12) + "s";
+      e.target.classList.add("shown");
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: "0px 0px -12% 0px" });
+  cards.forEach(function (c) { io.observe(c); });
+})();
+</script>
+<script>
+(function () {
+  // Size the pinned chart from the space actually left between the headline and the cards,
+  // on every screen size, so the whole chart shows and the cards always sit below it.
+  var RATIO = 1800 / 1040;   // width / height of the price-spread chart
+  function fit() {
+    document.querySelectorAll(".scrolly-chart .h-stage").forEach(function (stage) {
+      var slot = stage.querySelector(".chart-slot"), box = stage.querySelector(".chart-box");
+      var head = stage.querySelector(".stage-head"), cards = stage.querySelector(".h-cards");
+      if (!slot || !box || !head || !cards) return;
+      var gap = parseFloat(getComputedStyle(stage).rowGap) || 0;
+      var avail = stage.clientHeight - head.offsetHeight - cards.offsetHeight - 2 * gap;
+      var w = Math.min(slot.clientWidth, 960, Math.floor(avail * RATIO));
+      if (w > 0) box.style.width = w + "px";
+    });
+  }
+  window.addEventListener("resize", fit);
+  window.addEventListener("load", fit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  fit();
+})();
+</script>
+<script>
+(function () {
+  // grow each bar chart's bars once it scrolls into view
+  var charts = document.querySelectorAll(".bc");
+  if (!("IntersectionObserver" in window)) { charts.forEach(function (c) { c.classList.add("grow"); }); return; }
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("grow"); io.unobserve(e.target); } });
+  }, { rootMargin: "0px 0px -20% 0px" });
+  charts.forEach(function (c) { io.observe(c); });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lana McKinnon Portfolio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Data analytics portfolio of Lana McKinnon: projects that turn public data into clear stories.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700&family=Lato:wght@400;700&family=Newsreader:opsz,wght@6..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+body { margin: 0; }
+img { max-width: 100%; }
+/* Clean single-column portfolio: name and nav, avatar row, one-line headline, project grid, contact. */
+:root {
+  --bg: #FFFFFF; --ink: #1E1F22; --muted: #6B6F76; --rule: #E6E7EA; --soft: #EEEFF1; --soft-2: #F6F6F7;
+  --accent: #1F5FA8; --accent-ink: #FFFFFF; --tile: #141D27; --tile-ink: #E9EEF4; --tile-muted: #9FB0C2; --tile-hot: #8DB8F2;
+  --chip: #F1F3F6; --chip-ink: #2B2E33; --chip-on: #1F5FA8; --chip-on-ink: #FFFFFF;
+  --head: "Raleway", "Helvetica Neue", Arial, sans-serif;
+  --body: "Lato", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --wrap: 62rem;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121417; --ink: #ECEDEF; --muted: #A2A7AF; --rule: #2A2E34; --soft: #23272D; --soft-2: #1A1D21;
+  --accent: #8DB8F2; --accent-ink: #0F1720; --tile: #141D27; --tile-ink: #E9EEF4; --tile-muted: #9FB0C2; --tile-hot: #8DB8F2;
+  --chip: #23272D; --chip-ink: #DDE0E4; --chip-on: #8DB8F2; --chip-on-ink: #0F1720; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #121417; --ink: #ECEDEF; --muted: #A2A7AF; --rule: #2A2E34; --soft: #23272D; --soft-2: #1A1D21;
+  --accent: #8DB8F2; --accent-ink: #0F1720; --tile: #141D27; --tile-ink: #E9EEF4; --tile-muted: #9FB0C2; --tile-hot: #8DB8F2;
+  --chip: #23272D; --chip-ink: #DDE0E4; --chip-on: #8DB8F2; --chip-on-ink: #0F1720; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 1rem; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--head); font-weight: 700; line-height: 1.2; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.wrap { max-width: var(--wrap); margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* top bar */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.75rem; flex-wrap: wrap; }
+.brand { font-family: var(--head); font-weight: 700; font-size: 1.2rem; text-decoration: none; letter-spacing: 0.01em; }
+.nav { display: flex; gap: clamp(1rem, 4vw, 2.5rem); font-size: 0.95rem; }
+.nav a { text-decoration: none; color: var(--muted); padding-bottom: 0.2rem; border-bottom: 1.5px solid transparent; }
+.nav a:hover { color: var(--ink); }
+.nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--ink); }
+
+/* intro */
+.intro { padding-block: clamp(3rem, 9vw, 6rem) clamp(2.5rem, 6vw, 4rem); display: grid; gap: 2rem; }
+.avatars { display: flex; }
+.avatars span { width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.avatars span + span { margin-left: -34px; }
+.avatars .me { background: var(--accent); color: var(--accent-ink); font-family: var(--head); font-weight: 700; font-size: 1.5rem; letter-spacing: 0.04em; position: relative; z-index: 3; }
+.avatars .c2 { background: var(--soft); z-index: 2; }
+.avatars .c3 { background: var(--bg); border: 1px solid var(--rule); z-index: 1; }
+.headline { font-size: clamp(1.45rem, 3.2vw, 2rem); text-align: center; max-width: 44rem; margin-inline: auto; }
+.sub { text-align: center; color: var(--muted); max-width: 38rem; margin: -0.75rem auto 0; font-size: 1.05rem; }
+
+/* skills */
+.skills { padding-block: 0 clamp(2.5rem, 6vw, 3.5rem); display: grid; gap: 1.1rem; }
+.skills-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+.label { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.legend { display: flex; gap: 1rem; font-size: 0.82rem; color: var(--muted); flex-wrap: wrap; }
+.legend i { display: inline-block; width: 0.8rem; height: 0.8rem; border-radius: 999px; vertical-align: -0.1rem; margin-right: 0.35rem; }
+.legend .l-used { background: var(--chip); border: 1px solid var(--muted); }
+.legend .l-learn { border: 1px dashed var(--muted); }
+.chip-row { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0.75rem; align-items: start; }
+.chip-row > .label { padding-top: 0.45rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip { font: inherit; font-size: 0.88rem; padding: 0.32rem 0.8rem; border-radius: 999px; border: 1px solid transparent; background: var(--chip); color: var(--chip-ink); cursor: pointer; }
+.chip:hover { border-color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--chip-on); color: var(--chip-on-ink); }
+.chip.learn { background: transparent; border: 1px dashed var(--muted); color: var(--muted); cursor: default; }
+.filter-note { font-size: 0.88rem; color: var(--muted); min-height: 1.4em; }
+.filter-note button { font: inherit; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+
+/* projects */
+.projects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.25rem, 3vw, 2.5rem); padding-bottom: clamp(3rem, 8vw, 5rem); }
+.card { display: grid; gap: 0.9rem; text-decoration: none; transition: opacity 0.25s ease; min-width: 0; }
+.card.dim { opacity: 0.25; }
+.tile { aspect-ratio: 1 / 1; background: var(--tile); color: var(--tile-ink); padding: clamp(1.25rem, 4vw, 2.25rem); display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; position: relative; }
+.tile .kicker { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tile-muted); }
+.tile h3 { font-family: "Newsreader", Georgia, serif; font-weight: 600; font-size: clamp(2rem, 5.2vw, 3.1rem); line-height: 1.02; color: #fff; }
+.tile .stats { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+.tile .stats b { display: block; font-family: var(--head); font-size: clamp(1.4rem, 3.4vw, 2rem); color: var(--tile-hot); line-height: 1.1; }
+.tile .stats b.hmo { color: #F0A65A; }
+.tile .stats span { font-size: 0.8rem; color: var(--tile-muted); }
+.tile-map { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr); gap: 1rem; padding-right: clamp(0.75rem, 2.5vw, 1.5rem); }
+.tile-text { display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
+.tile-map img { height: 100%; width: 100%; object-fit: contain; min-height: 0; }
+.card:hover .tile { outline: 3px solid var(--accent); outline-offset: -3px; }
+.caption { text-align: center; display: grid; gap: 0.25rem; }
+.caption b { font-family: var(--head); font-size: 1rem; }
+.caption span { font-size: 0.9rem; color: var(--muted); }
+.card .tags { display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: center; }
+.card .tags span { font-size: 0.76rem; padding: 0.15rem 0.55rem; border-radius: 999px; background: var(--chip); color: var(--chip-ink); }
+.card .tags span.hit { background: var(--chip-on); color: var(--chip-on-ink); }
+.next { aspect-ratio: 1 / 1; border: 1px dashed var(--rule); display: grid; place-items: center; color: var(--muted); text-align: center; padding: 2rem; font-size: 0.95rem; background: var(--soft-2); }
+
+/* about + contact */
+.about { border-top: 1px solid var(--rule); padding-block: clamp(3rem, 7vw, 4.5rem); display: grid; grid-template-columns: 12rem minmax(0, 1fr); gap: 2rem; }
+.about h2 { font-size: 1.35rem; }
+.about .text { display: grid; gap: 1rem; max-width: 40rem; color: var(--ink); }
+.contact { border-top: 1px solid var(--rule); padding-block: clamp(3rem, 8vw, 5rem); text-align: center; display: grid; gap: 1rem; }
+.contact h2 { font-size: 1.3rem; }
+.contact a { font-family: var(--head); font-weight: 600; font-size: 1.1rem; text-decoration: none; border-bottom: 1.5px solid var(--rule); }
+.contact a:hover { border-bottom-color: var(--ink); }
+footer { padding-block: 1.5rem 2.5rem; font-size: 0.8rem; color: var(--muted); text-align: center; }
+
+@media (max-width: 720px) {
+  .projects { grid-template-columns: minmax(0, 1fr); }
+  .about { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .chip-row { grid-template-columns: minmax(0, 1fr); gap: 0.4rem; }
+  .chip-row > .label { padding-top: 0; }
+  .avatars span { width: 64px; height: 64px; }
+}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#top" id="top">Lana McKinnon</a>
+    <nav class="nav" aria-label="Main">
+      <a href="#work" aria-current="page">Portfolio</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="intro" aria-label="Introduction">
+    <div class="avatars" aria-hidden="true"><span class="me">LM</span><span class="c2"></span><span class="c3"></span></div>
+    <h1 class="headline">Data analyst turning public data into clear, checked stories.</h1>
+    <p class="sub">Graduate student in Business Analytics &amp; AI at the University of Illinois Urbana-Champaign.</p>
+  </section>
+
+  <section class="skills" aria-labelledby="skills-title">
+    <div class="skills-head">
+      <h2 class="label" id="skills-title">Skills and tools</h2>
+      <div class="legend"><span><i class="l-used"></i>Used in a project here (tap to filter)</span><span><i class="l-learn"></i>Coursework or learning</span></div>
+    </div>
+    <div class="chip-row">
+      <span class="label">Tools</span>
+      <div class="chips" data-group="tools">
+        <button class="chip" type="button" data-tag="Python" aria-pressed="false">Python</button>
+        <button class="chip" type="button" data-tag="pandas" aria-pressed="false">pandas</button>
+        <button class="chip" type="button" data-tag="matplotlib" aria-pressed="false">matplotlib</button>
+        <button class="chip" type="button" data-tag="Jupyter" aria-pressed="false">Jupyter</button>
+        <button class="chip" type="button" data-tag="Git &amp; GitHub" aria-pressed="false">Git &amp; GitHub</button>
+        <button class="chip" type="button" data-tag="HTML/CSS/JS" aria-pressed="false">HTML/CSS/JS</button>
+        <span class="chip learn">SQL</span>
+        <span class="chip learn">BigQuery</span>
+        <span class="chip learn">Excel</span>
+        <span class="chip learn">Tableau</span>
+        <span class="chip learn">Power BI</span>
+        <span class="chip learn">R</span>
+      </div>
+    </div>
+    <div class="chip-row">
+      <span class="label">Skills</span>
+      <div class="chips" data-group="skills">
+        <button class="chip" type="button" data-tag="Data cleaning" aria-pressed="false">Data cleaning</button>
+        <button class="chip" type="button" data-tag="Joining large datasets" aria-pressed="false">Joining large datasets</button>
+        <button class="chip" type="button" data-tag="Exploratory analysis" aria-pressed="false">Exploratory analysis</button>
+        <button class="chip" type="button" data-tag="Statistics" aria-pressed="false">Statistics</button>
+        <button class="chip" type="button" data-tag="Data visualization" aria-pressed="false">Data visualization</button>
+        <button class="chip" type="button" data-tag="Data storytelling" aria-pressed="false">Data storytelling</button>
+        <button class="chip" type="button" data-tag="Mapping" aria-pressed="false">Mapping</button>
+        <button class="chip" type="button" data-tag="Validation checks" aria-pressed="false">Validation checks</button>
+        <span class="chip learn">Data modeling</span>
+        <span class="chip learn">Dashboards</span>
+      </div>
+    </div>
+    <p class="filter-note" id="filter-note" aria-live="polite"></p>
+  </section>
+
+  <section class="projects" id="work" aria-label="Projects">
+    <a class="card" href="leverage/" data-tags="Python|pandas|matplotlib|Jupyter|Git &amp; GitHub|HTML/CSS/JS|Data cleaning|Joining large datasets|Exploratory analysis|Statistics|Data visualization|Data storytelling|Mapping|Validation checks">
+      <div class="tile tile-map">
+        <div class="tile-text">
+          <span class="kicker">Health plan prices · Illinois</span>
+          <h3>Who Holds the Leverage?</h3>
+        </div>
+        <img src="leverage/images/hero_map.png" width="696" height="1190" alt="Map of Illinois with one dot per doctor priced in both the PPO and an HMO, dense around Chicago">
+      </div>
+      <div class="caption">
+        <b>Who Holds the Leverage?</b>
+        <span>Same doctors, two plans: when does the PPO pay more than the HMO? A scrolling data story from BCBS of Illinois price transparency files, with a page of checks.</span>
+      </div>
+      <div class="tags">
+        <span>Python</span><span>pandas</span><span>matplotlib</span><span>Jupyter</span><span>Git &amp; GitHub</span><span>HTML/CSS/JS</span>
+        <span>Data cleaning</span><span>Joining large datasets</span><span>Exploratory analysis</span><span>Statistics</span><span>Data visualization</span><span>Data storytelling</span><span>Mapping</span><span>Validation checks</span>
+      </div>
+    </a>
+    <div class="next" aria-hidden="true"><p>More projects coming soon</p></div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section class="about" id="about" aria-labelledby="about-title">
+    <h2 id="about-title">About</h2>
+    <div class="text">
+      <p>I'm working toward a Master of Science in Business Analytics &amp; AI at the University of Illinois Urbana-Champaign (expected December 2027). I like gathering and organizing information until it explains something, and then showing it clearly.</p>
+      <p>Before analytics, I earned an MS in Biomedical Visualization at the University of Illinois Chicago and a BFA from the University of Michigan. I've held leadership roles in film and television. I also teach as adjunct faculty at DePaul University and lead professional development workshops.</p>
+    </div>
+  </section>
+
+  <section class="contact" id="contact" aria-labelledby="contact-title">
+    <h2 id="contact-title">Get in touch.</h2>
+    <p><a href="https://www.linkedin.com/in/lana-mckinnon" target="_blank" rel="noopener">linkedin.com/in/lana-mckinnon</a></p>
+  </section>
+  <footer>© 2026 Lana McKinnon</footer>
+</div>
+
+<script>
+(function () {
+  // tap a skill to highlight the projects tagged with it; tap again to clear
+  var chips = document.querySelectorAll("button.chip");
+  var cards = document.querySelectorAll(".card[data-tags]");
+  var note = document.getElementById("filter-note");
+  function apply(tag) {
+    var n = 0;
+    cards.forEach(function (c) {
+      var tags = c.getAttribute("data-tags").split("|");
+      var on = !tag || tags.indexOf(tag) !== -1;
+      c.classList.toggle("dim", !on);
+      if (tag && on) n++;
+      c.querySelectorAll(".tags span").forEach(function (s) { s.classList.toggle("hit", !!tag && s.textContent === tag); });
+    });
+    chips.forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-tag") === tag)); });
+    note.innerHTML = "";
+    if (tag) {
+      note.appendChild(document.createTextNode("Showing " + n + " project" + (n === 1 ? "" : "s") + " tagged " + tag + ". "));
+      var clear = document.createElement("button"); clear.type = "button"; clear.textContent = "Show all";
+      clear.addEventListener("click", function () { apply(null); });
+      note.appendChild(clear);
+    }
+  }
+  chips.forEach(function (b) {
+    b.addEventListener("click", function () {
+      apply(b.getAttribute("aria-pressed") === "true" ? null : b.getAttribute("data-tag"));
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

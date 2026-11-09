@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Leverage Checks</title>
+<meta name="description" content="How the findings in Who Holds the Leverage? were checked: a second office-visit code, doctors who couldn't be matched, and 95% confidence intervals.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Companion page to the main story: same tokens and type, a plain reading layout with tables. */
+:root {
+  --paper: #FBFBFC; --ink: #18212B; --muted: #5B6C7D; --rule: #DCE2E8; --tint: #EEF2F6;
+  --night: #141D27; --on-night: #E9EEF4; --on-night-muted: #9FB0C2;
+  --ppo: #1F5FA8; --ppo-light: #8DB8F2; --hmo: #D17A22; --ok: #2F7D4F;
+  --display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --text-w: 40rem; --wide-w: 68rem;
+  --sec: clamp(2.5rem, 7vh, 4.5rem);
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 1.0625rem; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--ppo); text-underline-offset: 0.18em; }
+a:focus-visible { outline: 3px solid var(--hmo); outline-offset: 3px; border-radius: 2px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; line-height: 1.1; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.45rem; }
+.mono { font-family: var(--mono); font-size: 0.85em; }
+.band { padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.col { max-width: var(--text-w); margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.1rem; }
+.wide { max-width: var(--wide-w); margin-inline: auto; }
+.chapter { padding-block: var(--sec); border-top: 1px solid var(--rule); }
+.eyebrow { font-family: var(--mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+.chapter h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); }
+h3 { font-size: 1.3rem; }
+
+/* header */
+.top { background: var(--night); color: var(--on-night); padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+.top .eyebrow { color: var(--on-night-muted); }
+.top a.back { color: var(--ppo-light); font-weight: 600; text-decoration: none; display: inline-block; margin-bottom: 1.5rem; }
+.top a.back:hover { text-decoration: underline; }
+.top h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); font-weight: 700; margin-top: 0.4rem; }
+.top .dek { font-family: var(--display); font-size: clamp(1.15rem, 2.2vw, 1.4rem); line-height: 1.4; margin-top: 1rem; max-width: 36rem; }
+
+/* verdict strip */
+.verdicts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+.verdict { background: #1F2B38; border-radius: 14px; padding: 1.1rem 1.25rem; display: grid; gap: 0.3rem; align-content: start; min-width: 0; }
+.verdict b { font-family: var(--display); font-size: 1.35rem; line-height: 1.15; color: #fff; }
+.verdict .tag { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: #8FD3A8; }
+.verdict .tag.part { color: #F0C27A; }
+.verdict p { font-size: 0.93rem; color: var(--on-night-muted); }
+
+/* figures and tables */
+figure { margin: 0; }
+.fig { margin-block: 1.75rem 0.5rem; display: grid; gap: 0.7rem; }
+.fig img { border-radius: 10px; border: 1px solid var(--rule); background: #fff; }
+.fig figcaption { max-width: var(--text-w); font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+.table-wrap { overflow-x: auto; margin-top: 1.25rem; border: 1px solid var(--rule); border-radius: 12px; background: #fff; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+caption { text-align: left; padding: 0.8rem 1rem 0.2rem; font-weight: 700; }
+th, td { padding: 0.55rem 1rem; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; min-width: 13rem; }
+thead th { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+tbody tr:last-child td { border-bottom: 0; }
+thead th { white-space: normal; vertical-align: bottom; }
+td.grp { font-weight: 600; vertical-align: top; }
+tr.gstart td { border-top: 1px solid #c9d3de; }
+table.grouped td.grp + td, table.grouped tr:not(.gstart) td:first-child { text-align: left; min-width: 0; color: var(--muted); }
+table.grouped th:nth-child(2) { text-align: left; }
+td.ci { color: var(--muted); font-size: 0.85rem; }
+td.same { color: var(--ok); font-weight: 600; }
+td.diff { color: var(--hmo); font-weight: 600; }
+.note { font-size: 0.9rem; color: var(--muted); }
+
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.card { background: var(--tint); border-radius: 14px; padding: 1.1rem 1.25rem; display: grid; gap: 0.35rem; align-content: start; min-width: 0; }
+.card b { font-family: var(--display); font-size: 1.2rem; line-height: 1.2; }
+.card p { font-size: 0.93rem; }
+.read { background: var(--tint); border-radius: 12px; padding: 1rem 1.2rem; display: grid; gap: 0.5rem; }
+.read ol { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; font-size: 0.95rem; }
+
+.sub { margin-top: 2.25rem; }
+.sub h3 + p { margin-top: 0.4rem; }
+.wide > .table-wrap:first-child { margin-top: 1rem; }
+footer.band { padding-block: 1.5rem 2.5rem; font-size: 0.82rem; color: var(--muted); border-top: 1px solid var(--rule); }
+footer .wide { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 2rem; }
+
+@media (max-width: 760px) {
+  .verdicts, .cards { grid-template-columns: 1fr; }
+  th, td { padding: 0.5rem 0.7rem; }
+  th:first-child, td:first-child { min-width: 10rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="band top">
+  <div class="wide">
+    <a class="back" href="./">← Back to the story</a>
+    <p class="eyebrow">Who Holds the Leverage? · Checks</p>
+    <h1>How I checked the findings</h1>
+    <p class="dek">The story compares the same doctors in two plans for one office visit. These checks ask whether the results depend on that one code, on which doctors happened to be in both plans, or on how providers were filtered.</p>
+    <div class="verdicts">
+      <div class="verdict"><span class="tag">Holds</span><b>A second office-visit code</b><p>Every headline result is the same for <span class="mono">CPT 99214</span>, a longer visit.</p></div>
+      <div class="verdict"><span class="tag">Holds</span><b>Doctors I couldn't match</b><p>Inside each large system, unmatched doctors are paid the same PPO price, and the HMO's standard price is still the most common.</p></div>
+      <div class="verdict"><span class="tag">Holds</span><b>All providers</b><p>Dropping the plausible-biller filter moves each headline share by 4 points or less.</p></div>
+      <div class="verdict"><span class="tag part">Holds, with a caveat</span><b>Statewide totals</b><p>Doctors priced in both plans are more often in health systems. So a statewide figure like "1 in 4 paid over $110 in the PPO" describes the doctors I could compare, not every PPO doctor.</p></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="band chapter" id="code-99214" style="border-top:0">
+    <div class="col">
+      <p class="eyebrow">Check 1</p>
+      <h2>The results hold for a longer office visit</h2>
+      <p>The story uses <span class="mono">CPT 99213</span>, the most common office visit. This check rebuilds every headline result with the same steps for <span class="mono">CPT 99214</span>, the next most common visit.</p>
+    </div>
+    <div class="wide">
+      <figure class="fig">
+        <img src="images/checks_99214.png" width="2584" height="1114" loading="lazy" alt="Paired dot chart comparing CPT 99213 and CPT 99214 for six headline shares and the nine largest health systems. The two codes match on every share; system gaps differ by at most 2 points.">
+        <figcaption>Filled circles: <span class="mono">CPT 99213</span>, used in the story. Open diamonds: <span class="mono">CPT 99214</span>. Same doctors, office prices, plausible billers.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <caption>Headline results for both codes</caption>
+          <thead><tr><th>Finding</th><th>99213</th><th>99214</th><th>Difference</th></tr></thead>
+          <tbody>
+            <tr><td>HMO doctors paid the HMO's most common price ($103.09 and $147.39)</td><td>55%</td><td>55%</td><td class="same">none</td></tr>
+            <tr><td>Large health systems (1,000+ doctors) with a higher PPO rate</td><td>62%</td><td>62%</td><td class="same">none</td></tr>
+            <tr><td>Large non-system groups with a higher PPO rate</td><td>4%</td><td>4%</td><td class="same">none</td></tr>
+            <tr><td>Large systems, Chicago suburbs</td><td>88%</td><td>88%</td><td class="same">none</td></tr>
+            <tr><td>Large systems, Chicago (Cook County)</td><td>60%</td><td>60%</td><td class="same">none</td></tr>
+            <tr><td>Large systems, downstate</td><td>37%</td><td>37%</td><td class="same">none</td></tr>
+            <tr><td>Size vs gap, health systems (Spearman correlation)</td><td>0.17</td><td>0.17</td><td class="same">none</td></tr>
+            <tr><td>Nine largest systems, median gap</td><td colspan="2">within 2 points for every system</td><td class="same">small</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col" style="margin-top:1.5rem">
+      <h3>Why the two codes agree so closely</h3>
+      <p>Both plans price a 99214 visit as a fixed multiple of a 99213 visit: the HMO at exactly 1.43 times, and the PPO at about 1.41 times. So each contract's PPO vs HMO gap carries over to the second code almost unchanged.</p>
+      <p>This is a supporting finding. It fits the story's contract-by-contract results, since the same contracts show the same gaps on both codes. Because the two prices move together, though, 99214 confirms the 99213 results more than it tests them independently. A service priced on a different basis, like the brain MRI, can go the other way.</p>
+    </div>
+  </section>
+
+  <section class="band chapter" id="size">
+    <div class="col">
+      <p class="eyebrow">Check 2 · <span class="mono">CPT 99213</span></p>
+      <h2>Size alone is a weak predictor</h2>
+      <p>If bigger always meant more leverage, the PPO vs HMO gap would rise steadily with group size. This check treats each PPO tax ID with 5 or more matched doctors as one point and measures how well size ranks the gap, using the <strong>Spearman correlation</strong>. It runs from −1 to +1, and values near 0 mean size tells you little.</p>
+    </div>
+    <div class="wide">
+      <figure class="fig">
+        <img src="images/checks_correlation.png" width="1775" height="901" loading="lazy" alt="Correlation chart with 95 percent intervals: all tax IDs 0.15, non-system groups 0.05, health systems 0.17, health systems under 1,000 doctors 0.12, health systems over 1,000 doctors 0.78 with a wide interval from 0.21 to 0.97 because there are only 9.">
+        <figcaption>Spearman correlation between group size and the median PPO vs HMO gap, with 95% intervals from a bootstrap over tax IDs (2,000 resamples).</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <caption>Correlation between size and the gap</caption>
+          <thead><tr><th>Group</th><th>Tax IDs</th><th>Correlation</th><th>95% interval</th></tr></thead>
+          <tbody>
+            <tr><td>All tax IDs</td><td>584</td><td>0.15</td><td>0.07 to 0.24</td></tr>
+            <tr><td>Non-system groups</td><td>441</td><td>0.05</td><td>−0.05 to 0.15</td></tr>
+            <tr><td>Health systems</td><td>143</td><td>0.17</td><td>0.01 to 0.33</td></tr>
+            <tr><td>Health systems under 1,000 doctors</td><td>134</td><td>0.12</td><td>−0.05 to 0.30</td></tr>
+            <tr><td>Health systems over 1,000 doctors</td><td>9</td><td>0.78</td><td>0.21 to 0.97</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col" style="margin-top:1.5rem">
+      <ul>
+        <li><strong>For most groups, size barely matters.</strong> Non-system groups show no relationship, and health systems under 1,000 doctors show none that can be told apart from zero.</li>
+        <li><strong>The relationship appears only at the very top.</strong> Among the nine systems with over 1,000 doctors, bigger systems tend to have bigger gaps. With only nine points, the interval is wide, from 0.21 to 0.97, and systems just as large (OSF, the University of Illinois, Loyola, Cook County Health) sit at about 0%.</li>
+        <li>That is why the story tells the leverage finding contract by contract rather than as "bigger means pricier."</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band chapter" id="unmatched">
+    <div class="col">
+      <p class="eyebrow">Check 3 · <span class="mono">CPT 99213</span></p>
+      <h2>Matched doctors look like the doctors I couldn't match</h2>
+      <p>This check uses the story's code, <span class="mono">CPT 99213</span>, the routine office visit, with office prices and plausible billers.</p>
+      <p>The story only uses <strong>matched</strong> doctors, who have a price in both the PPO and an HMO. <strong>Unmatched</strong> doctors have a price in just one plan, so their PPO vs HMO gap can't be measured. Their prices in that one plan can still be compared with the matched doctors'. Here the unmatched doctors include those practicing <strong>outside Illinois</strong>, who were left out of the story and are labeled separately.</p>
+    </div>
+
+    <div class="wide sub">
+      <div class="col"><h3>Inside the large systems: PPO prices</h3><p>Unmatched counts include system doctors at locations outside Illinois.</p></div>
+      <div class="table-wrap">
+        <table>
+          <caption>PPO side: median PPO price inside the nine largest health systems</caption>
+          <thead><tr><th>System</th><th>Matched doctors</th><th>Unmatched doctors</th><th>Median PPO, matched</th><th>Median PPO, unmatched</th></tr></thead>
+          <tbody>
+            <tr><td>Endeavor Health (NorthShore)</td><td>2,574</td><td>312</td><td>$150.32</td><td class="diff">$127.77</td></tr>
+            <tr><td>Northwestern Medical Group</td><td>2,905</td><td>1,061</td><td>$129.52</td><td class="same">$129.52</td></tr>
+            <tr><td>Carle Health</td><td>116</td><td>1,650</td><td>$117.96</td><td class="same">$117.96</td></tr>
+            <tr><td>Central DuPage Physician Group</td><td>1,056</td><td>187</td><td>$113.14</td><td class="same">$113.14</td></tr>
+            <tr><td>Rush</td><td>297</td><td>1,379</td><td>$106.96</td><td class="same">$106.96</td></tr>
+            <tr><td>University of Illinois</td><td>1,236</td><td>353</td><td>$102.85</td><td class="same">$102.85</td></tr>
+            <tr><td>Cook County Health</td><td>507</td><td>504</td><td>$102.85</td><td class="same">$102.85</td></tr>
+            <tr><td>Loyola University Medical Center</td><td>708</td><td>90</td><td>$102.85</td><td class="same">$102.85</td></tr>
+            <tr><td>OSF Medical Group</td><td>1,509</td><td>1,274</td><td>$95.36</td><td class="same">$95.36</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="wide sub">
+      <div class="col"><h3>Inside the large systems: HMO prices</h3><p>A system's HMO contract is often held by a different tax ID than its PPO contract, and one HMO tax ID can cover several systems. This table follows the HMO contracts that the systems' matched doctors bill under.</p></div>
+      <div class="table-wrap">
+        <table class="grouped">
+          <caption>HMO side: the HMO contracts used by the large systems</caption>
+          <thead><tr><th>HMO contract (systems it covers)</th><th>Group</th><th>Doctors</th><th>Median HMO price</th><th>At $103.09</th></tr></thead>
+          <tbody>
+            <tr class="gstart"><td rowspan="2" class="grp">NorthShore Physician Associates (Endeavor)</td><td>Matched</td><td>3,839</td><td>$103.09</td><td>66%</td></tr>
+            <tr><td>Unmatched</td><td>225</td><td class="same">$103.09</td><td>68%</td></tr>
+            <tr class="gstart"><td rowspan="2" class="grp">Cadence Medical Partners (Northwestern, Central DuPage)</td><td>Matched</td><td>4,259</td><td>$103.09</td><td>58%</td></tr>
+            <tr><td>Unmatched</td><td>397</td><td class="same">$103.09</td><td>75%</td></tr>
+            <tr class="gstart"><td rowspan="2" class="grp">University of Illinois</td><td>Matched</td><td>1,078</td><td>$103.09</td><td>75%</td></tr>
+            <tr><td>Unmatched</td><td>176</td><td class="same">$103.09</td><td>89%</td></tr>
+            <tr class="gstart"><td rowspan="2" class="grp">Loyola (HMO Illinois)</td><td>Matched</td><td>1,244</td><td>$103.09</td><td>77%</td></tr>
+            <tr><td>Unmatched</td><td>97</td><td class="same">$103.09</td><td>78%</td></tr>
+            <tr class="gstart"><td rowspan="2" class="grp">Cook County Health</td><td>Matched</td><td>389</td><td>$103.09</td><td>92%</td></tr>
+            <tr><td>Unmatched</td><td>53</td><td class="same">$103.09</td><td>93%</td></tr>
+            <tr class="gstart"><td rowspan="2" class="grp">OSF Healthcare System (OSF)</td><td>Matched</td><td>1,660</td><td>$81.06</td><td>0%</td></tr>
+            <tr><td>Unmatched</td><td>370</td><td class="diff">$95.36</td><td>0%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:0.75rem">Five of the six contracts pay a median of exactly $103.09 to both groups. OSF's downstate contract uses lower standard prices, $81.06 and $95.36, and its unmatched doctors sit on the higher of the two.</p>
+    </div>
+
+    <div class="wide sub">
+      <div class="col"><h3>Is the HMO's standard price still the standard?</h3><p>The story's chart showed HMO prices piling up on a few amounts, with $103.09 the most common. Here is the same spread for unmatched HMO doctors.</p></div>
+      <figure class="fig" style="margin-top:1rem">
+        <img src="images/checks_hmo_standard.png" width="1780" height="941" loading="lazy" alt="Grouped bar chart of HMO prices for an office visit, ordered from low to high: $81.06 (8 percent of matched and 10 percent of unmatched doctors), $87.63 (24 and 18), $95.36 (9 and 23), $103.09 (55 and 46, the most common for both), $106.18 (2 and 0.4), any other price (2 and 3).">
+        <figcaption>Share of HMO doctors at each price, ordered from lowest to highest price. Blue: matched doctors (17,451). Gray: unmatched doctors (4,378). <span class="mono">CPT 99213</span>, office prices, plausible billers.</figcaption>
+      </figure>
+      <p class="note" style="margin-top:0.75rem">$103.09 is the most common price in both groups, and 97% of doctors in each group are on one of the same five standard prices. Unmatched doctors sit more often at $95.36, the price common outside Chicago.</p>
+    </div>
+
+    <div class="wide sub">
+      <div class="col"><h3>By region, including doctors outside Illinois</h3><p>The story covers three Illinois regions. Doctors practicing outside Illinois were left out of it, and they appear here as their own row.</p></div>
+      <div class="table-wrap">
+        <table class="grouped">
+          <caption>PPO side by region</caption>
+          <thead><tr><th>Region</th><th>Group</th><th>Doctors</th><th>In health systems</th><th>Median PPO price</th><th>Paid over $110</th></tr></thead>
+          <tbody>
+            <tr class="gstart"><td rowspan="2" class="grp">Chicago (Cook County)</td><td>Matched</td><td>16,117</td><td>61%</td><td>$102.85</td><td>26%</td></tr>
+            <tr><td>Unmatched</td><td>19,450</td><td>28%</td><td class="same">$102.85</td><td class="diff">4%</td></tr>
+            <tr class="gstart"><td rowspan="2" class="grp">Chicago suburbs</td><td>Matched</td><td>8,109</td><td>50%</td><td>$102.85</td><td>31%</td></tr>
+            <tr><td>Unmatched</td><td>9,271</td><td>21%</td><td class="same">$102.85</td><td class="diff">5%</td></tr>
+            <tr class="gstart"><td rowspan="2" class="grp">Downstate Illinois</td><td>Matched</td><td>5,469</td><td>69%</td><td>$95.36</td><td>13%</td></tr>
+            <tr><td>Unmatched</td><td>21,145</td><td>52%</td><td class="same">$95.36</td><td>17%</td></tr>
+            <tr class="gstart"><td rowspan="1" class="grp"><em>Outside Illinois (not in the story)</em></td><td>Unmatched</td><td>14,305</td><td>48%</td><td>$102.85</td><td>14%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-wrap">
+        <table class="grouped">
+          <caption>HMO side by region</caption>
+          <thead><tr><th>Region</th><th>Group</th><th>Doctors</th><th>Most common HMO price</th><th>On a standard price</th></tr></thead>
+          <tbody>
+            <tr class="gstart"><td rowspan="2" class="grp">Chicago (Cook County)</td><td>Matched</td><td>9,827</td><td>$103.09</td><td>97%</td></tr>
+            <tr><td>Unmatched</td><td>1,394</td><td class="same">$103.09</td><td>99.6%</td></tr>
+            <tr class="gstart"><td rowspan="2" class="grp">Chicago suburbs</td><td>Matched</td><td>4,736</td><td>$103.09</td><td>98%</td></tr>
+            <tr><td>Unmatched</td><td>148</td><td class="same">$103.09</td><td>99%</td></tr>
+            <tr class="gstart"><td rowspan="2" class="grp">Downstate Illinois</td><td>Matched</td><td>2,888</td><td>$81.06</td><td>98%</td></tr>
+            <tr><td>Unmatched</td><td>60</td><td class="same">$81.06</td><td>98%</td></tr>
+            <tr class="gstart"><td rowspan="1" class="grp"><em>Outside Illinois (not in the story)</em></td><td>Unmatched</td><td>2,775</td><td>$103.09</td><td>95%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:0.75rem">Matched doctors outside Illinois show "none" because the story's matching kept Illinois doctors only. "Standard price" means one of the HMO's five most common prices statewide.</p>
+    </div>
+
+    <div class="col sub">
+      <h3>What this shows</h3>
+      <ul>
+        <li><strong>Inside each system, matched doctors are representative.</strong> Eight of the nine largest systems have the identical median PPO price for matched and unmatched doctors, and five of the six HMO contracts pay both groups the same median.</li>
+        <li><strong>Endeavor is the one PPO exception.</strong> Its unmatched doctors have a lower median, $127.77, but that is still well above the HMO's $103.09.</li>
+        <li><strong>The HMO's standard price holds beyond the sample.</strong> $103.09 is the most common HMO price for matched and unmatched doctors alike, in Chicago, in the suburbs, and even among doctors outside Illinois.</li>
+        <li><strong>Region by region, prices line up, and composition doesn't.</strong> In every region, the median PPO price is the same for matched and unmatched doctors. But in Chicago and the suburbs, matched doctors are about twice as likely to be in a health system, so far more of them are paid over $110. So a statewide figure in the story, like "1 in 4 paid over $110 in the PPO", describes the doctors I could compare, not every BCBS PPO doctor.</li>
+        <li><strong>Downstate rests on a thinner slice.</strong> About 1 in 5 downstate PPO doctors matched (5,469 of 26,614), compared with almost half in Chicago and the suburbs.</li>
+      </ul>
+      <h3 style="margin-top:0.75rem">Limits of this check</h3>
+      <ul>
+        <li>HMO contracts often use different tax IDs than the PPO, and one HMO tax ID can cover several systems, so most HMO doctors can't be sorted into health system vs non-system or assigned to a single system.</li>
+        <li>"Not in the PPO file" can mean the doctor is out of network, listed without a dollar price, or practices outside Illinois. The files don't always say which.</li>
+        <li>Region comes from each doctor's practice address in the national provider registry, which can lag behind moves.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band chapter" id="all-providers">
+    <div class="col">
+      <p class="eyebrow">Check 4 · <span class="mono">CPT 99213</span></p>
+      <h2>The results hold for all providers</h2>
+      <p>The story keeps only <strong>plausible billers</strong>, the provider types who would normally bill an office visit. The price files list a price for every provider in a contract, even those who would never bill the code, such as a radiologist with an office-visit price, so the filter screens those out. This check drops the filter: 25,874 doctors instead of 17,451.</p>
+    </div>
+    <div class="wide">
+      <figure class="fig">
+        <img src="images/checks_all_providers.png" width="1778" height="1021" loading="lazy" alt="Barbell chart: each headline share with plausible billers only and with all providers. Every pair is within about 4 percentage points.">
+        <figcaption>Filled dots: plausible billers, as in the story. Open rings: all providers. The bar between them is the change. <span class="mono">CPT 99213</span>, office prices, same doctors in both plans.</figcaption>
+      </figure>
+    </div>
+    <div class="col" style="margin-top:1.5rem">
+      <p>Every share moves by 4 points or less, and the order of the findings doesn't change: large systems still get a higher PPO rate far more often than large non-system groups, and the suburbs still lead. The filter sharpens the numbers without creating the pattern.</p>
+      <p>The size correlation for health systems also stays weak: 0.17 with the filter, 0.12 without it. Check 5 puts confidence intervals on each of these numbers.</p>
+    </div>
+  </section>
+
+  <section class="band chapter" id="confidence">
+    <div class="col">
+      <p class="eyebrow">Check 5 · <span class="mono">CPT 99213</span></p>
+      <h2>How confident can we be?</h2>
+      <p>Check 4 showed that dropping the plausible-biller filter moves the headline shares by a few points. The chart asks whether those moves are bigger than the uncertainty in the numbers themselves; the table below it lists the values.</p>
+      <div class="read">
+        <p class="eyebrow" style="color:var(--ppo)">How to read it</p>
+        <ol>
+          <li>Each dot has a bar, its <strong>95% confidence interval</strong>: the range it would likely fall in if the doctors could be drawn again. Large groups get narrow ranges, small groups wider ones.</li>
+          <li>If the two bars in a row overlap, the filter's effect can't be told apart from chance.</li>
+          <li>If they don't overlap, the filter really does change that number. The question then is whether it changes the story.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="wide">
+      <figure class="fig">
+        <img src="images/checks_all_providers_ci.png" width="1880" height="1101" loading="lazy" alt="Confidence interval chart for each headline share, plausible billers vs all providers. Most intervals are 1 to 2 points wide. Five of seven shares move by 2 to 4 points when the filter is dropped; the suburbs and downstate ranges overlap. Large systems stay far above large non-system groups in both versions.">
+        <figcaption>Filled: plausible billers, as in the story. Open: all providers. Bars are 95% confidence intervals (Wilson). <span class="mono">CPT 99213</span>, office prices, same doctors in both plans.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <caption>Headline results with and without the filter</caption>
+          <thead><tr><th>Finding</th><th>Plausible billers (story)</th><th>All providers</th><th>Difference</th></tr></thead>
+          <tbody>
+            <tr><td>HMO doctors at $103.09</td><td>55%</td><td>59%</td><td>+4 points</td></tr>
+            <tr><td>PPO doctors paid over $110</td><td>25%</td><td>23%</td><td>−2 points</td></tr>
+            <tr><td>Large health systems with a higher PPO rate</td><td>62%</td><td>65%</td><td>+2 points</td></tr>
+            <tr><td>Large non-system groups with a higher PPO rate</td><td>4%</td><td>7%</td><td>+3 points</td></tr>
+            <tr><td>Large systems, Chicago suburbs</td><td>88%</td><td>88%</td><td class="same">none</td></tr>
+            <tr><td>Large systems, Chicago (Cook County)</td><td>60%</td><td>63%</td><td>+3 points</td></tr>
+            <tr><td>Large systems, downstate</td><td>37%</td><td>40%</td><td>+3 points</td></tr>
+            <tr><td>Size vs gap, health systems (Spearman correlation)</td><td>0.17</td><td>0.12</td><td>−0.05</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col" style="margin-top:1.5rem">
+      <h3>What this shows</h3>
+      <ul>
+        <li><strong>The numbers are measured precisely.</strong> Most intervals are only 1 to 2 points wide, because the groups are large. Even the smallest group, large non-system groups, is measured to within about 1 to 1.5 points either way.</li>
+        <li><strong>The filter does shift some numbers, a little.</strong> Five of the seven shares move by more than the uncertainty, by 2 to 4 points.</li>
+        <li><strong>None of the shifts changes the story.</strong> In both versions, large health systems get a higher PPO rate far more often than large non-system groups (62% to 65% vs 4% to 7%), the suburbs stay highest, downstate stays lowest among the large systems, and $103.09 stays the HMO's most common price.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="band">
+  <div class="wide">
+    <span>Data: BCBS of Illinois price transparency files (Sept. 2026); NPPES; U.S. Census; CMS.</span>
+    <span><a href="./">Back to the story</a> · © 2026 Lana McKinnon</span>
+  </div>
+</footer>
+</body>
+</html>

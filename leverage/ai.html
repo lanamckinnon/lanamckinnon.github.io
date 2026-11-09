@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Leverage AI Use</title>
+<meta name="description" content="How AI was used in Who Holds the Leverage?: where it helped and how its work was checked.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Companion page to the main story: same tokens and type, a plain reading layout with tables. */
+:root {
+  --paper: #FBFBFC; --ink: #18212B; --muted: #5B6C7D; --rule: #DCE2E8; --tint: #EEF2F6;
+  --night: #141D27; --on-night: #E9EEF4; --on-night-muted: #9FB0C2;
+  --ppo: #1F5FA8; --ppo-light: #8DB8F2; --hmo: #D17A22; --ok: #2F7D4F;
+  --display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --text-w: 40rem; --wide-w: 68rem;
+  --sec: clamp(2.5rem, 7vh, 4.5rem);
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 1.0625rem; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--ppo); text-underline-offset: 0.18em; }
+a:focus-visible { outline: 3px solid var(--hmo); outline-offset: 3px; border-radius: 2px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; line-height: 1.1; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.45rem; }
+.mono { font-family: var(--mono); font-size: 0.85em; }
+.band { padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.col { max-width: var(--text-w); margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.1rem; }
+.wide { max-width: var(--wide-w); margin-inline: auto; }
+.chapter { padding-block: var(--sec); border-top: 1px solid var(--rule); }
+.eyebrow { font-family: var(--mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+.chapter h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); }
+h3 { font-size: 1.3rem; }
+
+/* header */
+.top { background: var(--night); color: var(--on-night); padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+.top .eyebrow { color: var(--on-night-muted); }
+.top a.back { color: var(--ppo-light); font-weight: 600; text-decoration: none; display: inline-block; margin-bottom: 1.5rem; }
+.top a.back:hover { text-decoration: underline; }
+.top h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); font-weight: 700; margin-top: 0.4rem; }
+.top .dek { font-family: var(--display); font-size: clamp(1.15rem, 2.2vw, 1.4rem); line-height: 1.4; margin-top: 1rem; max-width: 36rem; }
+
+/* verdict strip */
+.verdicts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+.verdict { background: #1F2B38; border-radius: 14px; padding: 1.1rem 1.25rem; display: grid; gap: 0.3rem; align-content: start; min-width: 0; }
+.verdict b { font-family: var(--display); font-size: 1.35rem; line-height: 1.15; color: #fff; }
+.verdict .tag { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: #8FD3A8; }
+.verdict .tag.part { color: #F0C27A; }
+.verdict p { font-size: 0.93rem; color: var(--on-night-muted); }
+
+/* figures and tables */
+figure { margin: 0; }
+.fig { margin-block: 1.75rem 0.5rem; display: grid; gap: 0.7rem; }
+.fig img { border-radius: 10px; border: 1px solid var(--rule); background: #fff; }
+.fig figcaption { max-width: var(--text-w); font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+.table-wrap { overflow-x: auto; margin-top: 1.25rem; border: 1px solid var(--rule); border-radius: 12px; background: #fff; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+caption { text-align: left; padding: 0.8rem 1rem 0.2rem; font-weight: 700; }
+th, td { padding: 0.55rem 1rem; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; min-width: 13rem; }
+thead th { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+tbody tr:last-child td { border-bottom: 0; }
+thead th { white-space: normal; vertical-align: bottom; }
+td.grp { font-weight: 600; vertical-align: top; }
+tr.gstart td { border-top: 1px solid #c9d3de; }
+table.grouped td.grp + td, table.grouped tr:not(.gstart) td:first-child { text-align: left; min-width: 0; color: var(--muted); }
+table.grouped th:nth-child(2) { text-align: left; }
+td.ci { color: var(--muted); font-size: 0.85rem; }
+td.same { color: var(--ok); font-weight: 600; }
+td.diff { color: var(--hmo); font-weight: 600; }
+.note { font-size: 0.9rem; color: var(--muted); }
+
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.card { background: var(--tint); border-radius: 14px; padding: 1.1rem 1.25rem; display: grid; gap: 0.35rem; align-content: start; min-width: 0; }
+.card b { font-family: var(--display); font-size: 1.2rem; line-height: 1.2; }
+.card p { font-size: 0.93rem; }
+.read { background: var(--tint); border-radius: 12px; padding: 1rem 1.2rem; display: grid; gap: 0.5rem; }
+.read ol { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; font-size: 0.95rem; }
+
+.sub { margin-top: 2.25rem; }
+.sub h3 + p { margin-top: 0.4rem; }
+.wide > .table-wrap:first-child { margin-top: 1rem; }
+.ai-table td:first-child { font-weight: 600; }
+.ai-table td { white-space: normal; text-align: left; vertical-align: top; min-width: 11rem; }
+.ai-table th { text-align: left; }
+footer.band { padding-block: 1.5rem 2.5rem; font-size: 0.82rem; color: var(--muted); border-top: 1px solid var(--rule); }
+footer .wide { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 2rem; }
+
+@media (max-width: 760px) {
+  .verdicts, .cards { grid-template-columns: 1fr; }
+  th, td { padding: 0.5rem 0.7rem; }
+  th:first-child, td:first-child { min-width: 10rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="band top">
+  <div class="wide">
+    <a class="back" href="./">← Back to the story</a>
+    <p class="eyebrow">Who Holds the Leverage? · AI use</p>
+    <h1>How I used AI</h1>
+    <p class="dek">I used Claude, an AI assistant made by Anthropic, as a collaborator on code, charts and drafts. I set the questions, reviewed every output, and made the final calls. This page shows where AI helped and how I checked its work.</p>
+  </div>
+</header>
+
+<main>
+  <section class="band chapter" id="where" style="border-top:0">
+    <div class="col">
+      <p class="eyebrow">Part 1</p>
+      <h2>Where I used AI</h2>
+      <p>AI did the hands-on work in the stages below. In each one, the decisions stayed with me.</p>
+    </div>
+    <div class="wide">
+      <div class="table-wrap">
+        <table class="ai-table">
+          <caption>Stages of the project</caption>
+          <thead><tr><th>Stage</th><th>What AI did</th><th>What I decided</th></tr></thead>
+          <tbody>
+            <tr><td>Chart revisions</td><td>Wrote and revised the Python code for the charts, based on my requests.</td><td>Which charts to revise and how. I required every change to go in a separate revisions notebook, so the original analysis stayed untouched.</td></tr>
+            <tr><td>Story and web page</td><td>Built a slide deck and this scrolling page from my storyboard.</td><td>The order of the story, where each section and chart goes, and what each one should say. I reviewed every screen.</td></tr>
+            <tr><td>Wording</td><td>Drafted options for headlines, labels and cards.</td><td>Which option to use, and how to rewrite it.</td></tr>
+            <tr><td>Checks</td><td>Wrote the code for each check I asked for: a second code, unmatched doctors, all providers, confidence intervals and the size correlation.</td><td>Which checks to run and what each one needed to show. See <a href="checks.html">How I checked the findings</a>.</td></tr>
+            <tr><td>Background research</td><td>Found outside sources, such as the news of the merger that formed Endeavor Health.</td><td>That any claim not in the data needs a source on the page.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="band chapter" id="checked">
+    <div class="col">
+      <p class="eyebrow">Part 2</p>
+      <h2>How I checked AI's work</h2>
+      <ul>
+        <li><strong>I read every chart for ways it could mislead.</strong> I caught tick marks spaced unevenly, negative percentages that were hard to read, panels with different scales that looked comparable, legend dots whose sizes suggested a meaning they didn't have, labels covering data points, and a highlight box that cut through a bar.</li>
+        <li><strong>I questioned numbers that didn't match.</strong> A card said Loyola had 1,237 doctors while the chart showed 708. The two counts were different measures, doctors in the group and doctors compared, so both labels were rewritten. When a filter returned fewer systems than I expected, I traced it to the wrong column: doctors compared instead of group size.</li>
+        <li><strong>I asked for evidence beyond the sample.</strong> I asked whether the findings held for a second office-visit code, for doctors who couldn't be matched, and for all providers. When the second code matched the first almost exactly, I asked why instead of accepting it. The answer was that both plans price that code as a fixed multiple of the first.</li>
+        <li><strong>I required sources for outside facts.</strong> The claim that three groups belong to one health system isn't in the price files, so I asked how we knew it. The page now cites the merger.</li>
+        <li><strong>I checked that every claim covers the whole story.</strong> Statements written about office visits had to hold for the MRI as well, or say that they don't.</li>
+        <li><strong>I reviewed the pages for privacy before publishing.</strong> No individual doctors, tax ID numbers or personal details appear.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="band">
+  <div class="wide">
+    <span>Data: BCBS of Illinois price transparency files (Sept. 2026); NPPES; U.S. Census; CMS.</span>
+    <span><a href="./">Back to the story</a> · © 2026 Lana McKinnon</span>
+  </div>
+</footer>
+</body>
+</html>
