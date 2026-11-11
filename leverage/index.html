@@ -329,6 +329,7 @@ html:not(.js) .hl[data-key~="tail"], html:not(.js) .hl-label[data-key~="tail2"] 
 @media (min-width: 1200px) { :root { --text-w: 46rem; } }
 @media (min-width: 1600px) { :root { --text-w: 50rem; } }
 @media (max-width: 760px) { .audiences { grid-template-columns: 1fr; } }
+.methods-grid, .about-card { grid-template-columns: minmax(0, 1fr); }
 .audiences.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .aud-lead { max-width: var(--text-w); margin: 2.25rem auto 0; font-family: var(--display); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.15; color: #F0A65A; }
 .aud-lead + .audiences { margin-top: 1rem; }

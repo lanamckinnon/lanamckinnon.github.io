@@ -100,6 +100,10 @@ footer .wide { display: flex; flex-wrap: wrap; justify-content: space-between; g
   th, td { padding: 0.5rem 0.7rem; }
   th:first-child, td:first-child { min-width: 10rem; }
 }
+/* match the story page: text, charts, tables and cards share one column width */
+.wide, .top .dek { max-width: var(--text-w); }
+@media (min-width: 1200px) { :root { --text-w: 46rem; } }
+@media (min-width: 1600px) { :root { --text-w: 50rem; } }
 </style>
 </head>
 <body>
